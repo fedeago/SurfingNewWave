@@ -34,7 +34,7 @@ started, open a CMD prompt by hitting the Windows key again and typing
 cmd, then Enter. In the CMD prompt type
 
 ```
-docker run -e PASSWORD=<choose_a_password_for_rstudio> -p 8787:8787 jmacdon/bioc2020anno
+docker run -e PASSWORD=<choose_a_password_for_rstudio> -p 8787:8787 fedeago/surfingnewwave
 ```
 
 You can choose any password for rstudio - that's what you will use to
@@ -66,7 +66,7 @@ informative. To get the Docker container, it's the same as for
 Windows.
 
 ```
-docker run -e PASSWORD=<choose_a_password_for_rstudio> -p 8787:8787 jmacdon/bioc2020anno
+docker run -e PASSWORD=<choose_a_password_for_rstudio> -p 8787:8787 fedeago/surfingnewwave
 ```
 
 ### MacOS
@@ -76,7 +76,7 @@ instructions - it's just a regular drag'n'drop install. Once it's
 installed and started, open a terminal prompt and as above type.
 
 ```
-docker run -e PASSWORD=<choose_a_password_for_rstudio> -p 8787:8787 jmacdon/bioc2020anno
+docker run -e PASSWORD=<choose_a_password_for_rstudio> -p 8787:8787 fedeago/surfingnewwave
 ```
 
 For all operating systems, once the Docker container is initialized,
