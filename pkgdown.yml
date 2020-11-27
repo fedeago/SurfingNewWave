@@ -4,7 +4,7 @@ pkgdown_sha: ~
 articles:
   HOWTO_BUILD_WORKSHOP: HOWTO_BUILD_WORKSHOP.html
   workshop_example: workshop_example.html
-last_built: 2020-11-27T17:05Z
+last_built: 2020-11-27T17:09Z
 urls:
   reference: https://fedeago.github.io/SurfingNewWave//reference
   article: https://fedeago.github.io/SurfingNewWave//articles
