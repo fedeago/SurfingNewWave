@@ -90,49 +90,61 @@
 
       </header><div class="row">
   <div class="contents col-md-9">
-<div id="buildabiocworkshop2020" class="section level1">
+
+<div id="dimensional-reduction-and-batch-effect-removal" class="section level1">
 <div class="page-header"><h1 class="hasAnchor">
-<a href="#buildabiocworkshop2020" class="anchor"></a>BuildABiocWorkshop2020</h1></div>
-<p>This package is a template for building a Bioconductor 2020 workshop. The package includes Github actions to:</p>
-<ol>
-<li>Set up bioconductor/bioconductor_docker:devel on Github resources</li>
-<li>Install package dependencies for your package (based on the <code>DESCRIPTION</code> file)</li>
-<li>Run <code><a href="https://rdrr.io/pkg/rcmdcheck/man/rcmdcheck.html">rcmdcheck::rcmdcheck</a></code>
-</li>
-<li>Build a pkgdown website and push it to github pages</li>
-<li>Build a docker image with the installed package and dependencies</li>
-</ol>
-<div id="details" class="section level2">
-<h2 class="hasAnchor">
-<a href="#details" class="anchor"></a>Details</h2>
-<p>For detailed instructions, see the <code>How to build a workshop</code> article/vignette.</p>
+<a href="#dimensional-reduction-and-batch-effect-removal" class="anchor"></a>Dimensional reduction and batch effect removal</h1></div>
+<p><img src="https://github.com/jmacdon/Bioc2020Anno/workflows/.github/workflows/basic_checks.yaml/badge.svg"></p>
 </div>
-<div id="results-of-successful-deployment" class="section level2">
+<div id="workshop-description" class="section level1">
+<h1 class="hasAnchor">
+<a href="#workshop-description" class="anchor"></a>Workshop description</h1>
+<div id="prerequisites" class="section level2">
 <h2 class="hasAnchor">
-<a href="#results-of-successful-deployment" class="anchor"></a>Results of successful deployment</h2>
+<a href="#prerequisites" class="anchor"></a>Prerequisites</h2>
 <ul>
-<li>A working docker image that contains the installed package and dependencies.</li>
-<li>An up-to-date <code>pkgdown</code> website at <a href="https://YOURUSERNAME.github.io/YOURREPOSITORYNAME/" class="uri">https://YOURUSERNAME.github.io/YOURREPOSITORYNAME/</a>
-</li>
-<li>Docker image will be tagged with <code>latest</code>, <code>sha-XXXXXX</code> where <code>XXXXXX</code> is the hash of the current <code>master</code> commit, and <code>master</code>.</li>
+<li>Basic knowledge of R syntax</li>
+<li>Familiarity with the SummarizedExperiment class</li>
+<li>Basic knowledge of DelayedArray object and hdf5 storing procedure.</li>
 </ul>
 </div>
-<div id="to-use-the-resulting-image" class="section level2">
+<div id="preparation" class="section level2">
 <h2 class="hasAnchor">
-<a href="#to-use-the-resulting-image" class="anchor"></a>To use the resulting image:</h2>
-<div class="sourceCode" id="cb1"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1"></a><span class="ex">docker</span> run -e PASSWORD=<span class="op">&lt;</span>choose_a_password_for_rstudio<span class="op">&gt;</span> -p 8787:8787 YOURDOCKERIMAGENAME</span></code></pre></div>
-<p>Once running, navigate to <a href="https://localhost:8787/" class="uri">https://localhost:8787/</a> and then login with <code>rstudio</code>:<code>yourchosenpassword</code>.</p>
-<p>To try with <strong>this</strong> repository docker image:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1"></a><span class="ex">docker</span> run -e PASSWORD=abc -p 8787:8787 seandavi/buildabiocworkshop2020</span></code></pre></div>
-<p><em>NOTE</em>: Running docker that uses the password in plain text like above exposes the password to others in a multi-user system (like a shared workstation or compute node). In practice, consider using an environment variable instead of plain text to pass along passwords and other secrets in docker command lines.</p>
+<a href="#preparation" class="anchor"></a>Preparation</h2>
+<p>To be able to follow along with this workshop, we have created a Docker installation that includes the devel version of R, and all required Bioconductor packages. In order to access this, you need to first install <a href="https://docs.docker.com/engine/install/">Docker</a> on your own computer. Once you have done that, you can then load the Docker container for this workshop by starting Docker.</p>
+<p>How you do this is dependent on your operating system.</p>
+<div id="windows" class="section level3">
+<h3 class="hasAnchor">
+<a href="#windows" class="anchor"></a>Windows</h3>
+<p>Hit the ‘Windows’ key (lower left on your keyboard, between Ctrl and Alt), then type Docker. If Docker is installed you should see Docker App highlighted - click Enter to start the App. It can take some time to get started. You can see it’s doing something by clicking on the little caret (^) in the lower right of your screen - there should be a little animated Docker icon which indicates it’s starting. Once it is started, open a CMD prompt by hitting the Windows key again and typing cmd, then Enter. In the CMD prompt type</p>
+<pre><code>docker run -e PASSWORD=&lt;choose_a_password_for_rstudio&gt; -p 8787:8787 jmacdon/bioc2020anno</code></pre>
+<p>You can choose any password for rstudio - that’s what you will use to log in. It will take some time for the Docker to be downloaded and started, so you might consider doing this ahead of time.</p>
 </div>
-<div id="whatcha-get" class="section level2">
-<h2 class="hasAnchor">
-<a href="#whatcha-get" class="anchor"></a>Whatcha get</h2>
-<p><a href="https://seandavi.github.io/BuildABiocWorkshop2020" class="uri">https://seandavi.github.io/BuildABiocWorkshop2020</a></p>
-<p><img src="https://github.com/seandavi/BuildABiocWorkshop2020/raw/master/inst/images/dockerhub_result.png" alt="dockerhub"></p>
+<div id="linux" class="section level3">
+<h3 class="hasAnchor">
+<a href="#linux" class="anchor"></a>Linux</h3>
+<p>For Linux, it depends on how you installed. If you used a package installer then presumably Docker will be set to start automatically. Otherwise you need to start the Docker daemon by hand (or set it to start automatically). There are too many variables to give much detailed information here; for those on Linux, the assumption is that you probably know what you are doing and can figure it out from the Docker install page.</p>
+<p>To start the daemon, if neccessary, do</p>
+<pre><code>sudo dockerd &amp;
+## followed by 
+
+sudo docker run hello-world
+</code></pre>
+<p>If Docker is installed correctly it should print something informative. To get the Docker container, it’s the same as for Windows.</p>
+<pre><code>docker run -e PASSWORD=&lt;choose_a_password_for_rstudio&gt; -p 8787:8787 jmacdon/bioc2020anno</code></pre>
+</div>
+<div id="macos" class="section level3">
+<h3 class="hasAnchor">
+<a href="#macos" class="anchor"></a>MacOS</h3>
+<p>There is an installer for MacOS. As with Windows, follow the instructions - it’s just a regular drag’n’drop install. Once it’s installed and started, open a terminal prompt and as above type.</p>
+<pre><code>docker run -e PASSWORD=&lt;choose_a_password_for_rstudio&gt; -p 8787:8787 jmacdon/bioc2020anno</code></pre>
+<p>For all operating systems, once the Docker container is initialized, you can access it by opening a browser and typing</p>
+<pre><code>http://localhost:8787</code></pre>
+<p>Which should present you with an RStudio login. Use rstudio as the username and the password you used to start the Docker.</p>
 </div>
 </div>
+</div>
+
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
