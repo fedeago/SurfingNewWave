@@ -41,4 +41,4 @@ Suggests:
 URL: https://fedeago.github.io/SurfingNewWave/
 BugReports: https://github.com/fedeago/SurfingNewWave/issues/new/choose
 VignetteBuilder: knitr
-DockerImage: fedeago/SurfingNewWave:latest
+DockerImage: fedeago/surfingnewwave:latest
