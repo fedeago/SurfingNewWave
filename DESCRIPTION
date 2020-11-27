@@ -38,7 +38,7 @@ Suggests:
     BiocStyle,
     knitr,
     pkgdown
-URL: https://github.com/fedeago/SurfingNewWave
+URL: https://fedeago.github.io/SurfingNewWave/
 BugReports: https://github.com/fedeago/SurfingNewWave/issues/new/choose
 VignetteBuilder: knitr
-DockerImage: seandavi/buildabiocworkshop2020:latest
+DockerImage: fedeago/SurfingNewWave:latest
