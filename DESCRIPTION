@@ -1,12 +1,11 @@
-Package: BuildABiocWorkshop2020
-Title: Bioconductor Workshop Template and Github Actions
+Package: SurfingNewWave
+Title: Eurobioc2020 workshop about NewWave
 Version: 0.1.1
 Authors@R: 
-    person(given = "Sean",
-           family = "Davis",
+    person(given = "Federico",
+           family = "Agostinis",
            role = c("aut", "cre"),
-           email = "seandavi@gmail.com",
-           comment = c(ORCID = "your-orc-id-here"))
+           email = "seandavi@gmail.com")
 Description: This package serves as a template for using github actions to 
     prepare a Bioconductor Workshop package for use. In particular,
     a pkgdown website and docker image are generated based on workflow 
@@ -17,12 +16,29 @@ LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.0
 Depends: 
-    Biobase
+    Biobase,
+    methods,
+    SingleCellExperiment,
+    parallel,
+    irlba,
+    Matrix,
+    DelayedArray,
+    BiocSingular,
+    stats,
+    SummarizedExperiment,
+    SharedObject(>= 1.3.15)
 Suggests: 
-    knitr,
+    testthat,
     rmarkdown,
+    splatter,
+    mclust,
+    Rtsne,
+    ggplot2,
+    Rcpp,
+    BiocStyle,
+    knitr,
     pkgdown
-URL: https://seandavi.github.io/BuildABiocWorkshop2020/
-BugReports: https://github.com/seandavi/BuildABiocWorkshop2020/issues/new/choose
+URL: https://github.com/fedeago/SurfingNewWave
+BugReports: https://github.com/fedeago/SurfingNewWave/issues/new/choose
 VignetteBuilder: knitr
 DockerImage: seandavi/buildabiocworkshop2020:latest
