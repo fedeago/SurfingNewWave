@@ -16,6 +16,7 @@ LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.0
 Depends: 
+    NewWave,
     Biobase,
     methods,
     SingleCellExperiment,
@@ -26,6 +27,7 @@ Depends:
     BiocSingular,
     stats,
     SummarizedExperiment,
+    TENxBrainData,
     SharedObject(>= 1.3.15)
 Suggests: 
     testthat,

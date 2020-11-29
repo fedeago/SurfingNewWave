@@ -1,0 +1,205 @@
+---
+title: "EuroBioc2020 NewWave workshop"
+output: 
+  rmarkdown::html_vignette:
+    toc: true
+vignette: >
+  %\VignetteIndexEntry{EuroBioc2020 NewWave workshop}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# Introduction to NewWave
+
+EuroBioc 2020: 14-18 December
+
+## Workshop Description
+
+The fast development of single cell sequencing technologies in the recent years has generated a gap between the throughput of the experiments and the capability of analizing the generated data. 
+In this package, we implement mini-batch stochastic gradient descent and the possibility to work with HDF5 files. We decided to use a negative binomial model following the observation that droplet sequencing technologies do not induce zero inflation in the data. Thanks to these improvements and the possibility of massively parallelize the estimation process using PSOCK clusters, we are able to speed up the computation.
+
+
+### _R_ / _Bioconductor_ packages used
+
+* SharedObject
+* DelayedArray
+* SingleCellExperiment
+* 
+
+## Workshop goals and objectives
+
+
+# Installation
+
+First of all we need to install NewWave:
+
+```{r, eval = FALSE}
+if(!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+BiocManager::install("NewWave")
+```
+
+```{r}
+suppressPackageStartupMessages(
+  {library(SingleCellExperiment)
+library(splatter)
+library(irlba)
+library(Rtsne)
+library(ggplot2)
+library(mclust)
+library(NewWave)}
+)
+```
+
+# Introduction
+
+NewWave is a new package that assumes a Negative Binomial distributions for dimensionality reduction and batch effect removal.
+In order to reduce the memory consumption it uses a PSOCK cluster combined with the R package SharedObject that allow to share a matrix between different cores without memory duplication. Thanks to that we can massively parallelize the estimation process with huge benefit in terms of time consumption.
+We can reduce even more the time consumption using some minibatch approaches on the different steps of the optimization.
+
+I am going to show how to use NewWave with example data generated with Splatter.
+
+```{r}
+params <- newSplatParams()
+N=500
+set.seed(1234)
+data <- splatSimulateGroups(params,batchCells=c(N/2,N/2),
+                           group.prob = rep(0.1,10),
+                           de.prob = 0.2,
+                           verbose = FALSE) 
+```
+
+Now we have a dataset with 500 cells and 10000 genes, I will use only the 500 most variable genes.
+NewWave takes as input raw data, not normalized.
+
+```{r}
+set.seed(12359)
+hvg <- rowVars(counts(data))
+names(hvg) <- rownames(counts(data))
+data <- data[names(sort(hvg,decreasing=TRUE))[1:500],]
+```
+
+As you can see there is a variable called batch in the colData section.
+
+```{r}
+colData(data)
+```
+
+**IMPORTANT:** For batch effecr removal the batch variable must be a factor
+
+```{r}
+data$Batch <- as.factor(data$Batch)
+```
+
+We also have a variable called Group that represent the cell type labels.
+
+We can see the how the cells are distributed between group and batch
+```{r}
+pca <- prcomp_irlba(t(counts(data)),n=10)
+plot_data <-data.frame(Rtsne(pca$x)$Y)
+```
+
+```{r}
+plot_data$batch <- data$Batch
+plot_data$group <- data$Group
+```
+
+```{r}
+ggplot(plot_data, aes(x=X1,y=X2,col=group, shape=batch))+ geom_point()
+```
+
+There is a clear batch effect between the cells.
+
+Let's try to correct it.
+
+# NewWave
+
+I am going to show different implementation and the suggested way to use them with the given hardware.
+
+Some advise:
+
++ Verbose option has default FALSE, in this vignette I will change it for explanatory intentions, don't do it with big dataset because it can sensibly slower the computation
++ There are no concern about the dimension of mini-batches, I always used the 10\% of the observations
+
+## Standard usage
+
+This is the way to insert the batch variable, in the same manner can be inserted other cell-related variable and if you need some gene related variable those can be inserted in V.
+
+```{r}
+res <- newWave(data,X = "~Batch", K=10, verbose = TRUE)
+```
+
+In order to make it faster you can increase the number of cores using "children" parameter:
+
+```{r}
+res2 <- newWave(data,X = "~Batch", K=10, verbose = TRUE, children=2)
+```
+
+## Commonwise dispersion and minibatch approaches
+
+If you do not have an high number of cores to run newWave this is the fastest way to run.
+The optimization process is done by three process itereated until convercence.
+
++ Optimization of the dispersion parameters
++ Optimization of the gene related parameters
++ Optimization of the cell related parameters
+  
+Each of these three steps can be accelerated using mini batch, the number of observation is settled with these parameters:
+
++ n_gene_disp : Number of genes to use in the dispersion optimization
++ n_cell_par : Number of cells to use in the cells related parameters
+        optimization
++ n_gene_par : Number of genes to use in the genes related parameters
+        optimization
+
+```{r}
+res3 <- newWave(data,X = "~Batch", verbose = TRUE,K=10, children=2,
+                n_gene_disp = 100, n_gene_par = 100, n_cell_par = 100)
+```
+
+## Genewise dispersion mini-batch
+
+If you have a lot of core disposable or you want to estimate a genewise dispersion parameter this is the fastes configuration:
+
+```{r}
+res3 <- newWave(data,X = "~Batch", verbose = TRUE,K=10, children=2,
+                n_gene_par = 100, n_cell_par = 100, commondispersion = FALSE)
+```
+
+NB: do not use n_gene_disp in this case, it will slower the computation.
+
+Now I can use the latent dimension rapresentation for visualization purpose:
+
+```{r}
+latent <- reducedDim(res)
+
+tsne_latent <- data.frame(Rtsne(latent)$Y)
+tsne_latent$batch <- data$Batch
+tsne_latent$group <- data$Group
+```
+
+```{r}
+ggplot(tsne_latent, aes(x=X1,y=X2,col=group, shape=batch))+ geom_point()
+```
+
+or for clustering:
+
+```{r}
+cluster <- kmeans(latent, 10)
+
+adjustedRandIndex(cluster$cluster, data$Group)
+```
+
+# Session Information
+
+```{r}
+sessionInfo()
+```
+
