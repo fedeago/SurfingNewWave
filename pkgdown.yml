@@ -2,10 +2,8 @@ pandoc: 2.7.3
 pkgdown: 1.6.1
 pkgdown_sha: ~
 articles:
-  HOWTO_BUILD_WORKSHOP: HOWTO_BUILD_WORKSHOP.html
   vignette: vignette.html
-  workshop_example: workshop_example.html
-last_built: 2020-11-29T11:59Z
+last_built: 2020-12-02T20:29Z
 urls:
   reference: https://fedeago.github.io/SurfingNewWave//reference
   article: https://fedeago.github.io/SurfingNewWave//articles
