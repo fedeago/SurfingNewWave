@@ -38,13 +38,7 @@ In this package, we implement mini-batch stochastic gradient descent and the pos
 
 # Installation
 
-First of all we need to install NewWave:
 
-```{r, eval = FALSE}
-if(!requireNamespace("BiocManager", quietly = TRUE))
-    install.packages("BiocManager")
-BiocManager::install("NewWave")
-```
 
 ```{r}
 suppressPackageStartupMessages(
@@ -66,27 +60,38 @@ We can reduce even more the time consumption using some minibatch approaches on 
 
 I am going to show how to use NewWave with example data generated with Splatter.
 
+Splatter is a R package designed to generate single cell transcriptomic data with a high level of customization.
+
+In our implementation we want a batch effect to be corrected, the additionals batch parameters are setted in order to create more complex batch effect instead of defoult.
+
+Think to the group as a cell type, we will use those group to test the resulted low dimensional representation throught a cluster analysis.
+
 ```{r}
 params <- newSplatParams()
-N=500
+N=1000
 set.seed(1234)
 data <- splatSimulateGroups(params,batchCells=c(N/2,N/2),
                            group.prob = rep(0.1,10),
                            de.prob = 0.2,
+                           batch.facLoc = 2,
+                           batch.facScale = 1,
                            verbose = FALSE) 
 ```
 
-Now we have a dataset with 500 cells and 10000 genes, I will use only the 500 most variable genes.
-NewWave takes as input raw data, not normalized.
+The resoult of splatter is a SingleCellExperiment with the generated data in the assays counts.
+```{r}
+data
+```
+
+As you can see we have the number of cell that we choose(N=500) an 10 000 genes. For this workshop we will choose only the 1000 most variable genes.
 
 ```{r}
-set.seed(12359)
 hvg <- rowVars(counts(data))
 names(hvg) <- rownames(counts(data))
 data <- data[names(sort(hvg,decreasing=TRUE))[1:500],]
 ```
 
-As you can see there is a variable called batch in the colData section.
+In a SingleCellExperiment the colData slot contains the sample level metadata. In our situation there are two important variable, Batch and Group.
 
 ```{r}
 colData(data)
@@ -98,9 +103,12 @@ colData(data)
 data$Batch <- as.factor(data$Batch)
 ```
 
-We also have a variable called Group that represent the cell type labels.
+NewWave takes as input raw data, not normalized. So now we have all the object needed to start.
 
-We can see the how the cells are distributed between group and batch
+
+
+We can see the how the cells are distributed between group and batch.
+
 ```{r}
 pca <- prcomp_irlba(t(counts(data)),n=10)
 plot_data <-data.frame(Rtsne(pca$x)$Y)
@@ -114,6 +122,13 @@ plot_data$group <- data$Group
 ```{r}
 ggplot(plot_data, aes(x=X1,y=X2,col=group, shape=batch))+ geom_point()
 ```
+Just for a later comparison let's see the performance of clustering on PCA low dimensional representation.
+
+```{r}
+cluster <- kmeans(pca$x, 10)
+
+adjustedRandIndex(cluster$cluster, data$Group)
+```
 
 There is a clear batch effect between the cells.
 
@@ -123,17 +138,21 @@ Let's try to correct it.
 
 I am going to show different implementation and the suggested way to use them with the given hardware.
 
-Some advise:
+Some basic advise:
 
 + Verbose option has default FALSE, in this vignette I will change it for explanatory intentions, don't do it with big dataset because it can sensibly slower the computation
 + There are no concern about the dimension of mini-batches, I always used the 10\% of the observations
 
 ## Standard usage
 
-This is the way to insert the batch variable, in the same manner can be inserted other cell-related variable and if you need some gene related variable those can be inserted in V.
+I am going to present the stadard implementation of NewWave, it uses 1 cores, it estimates a dispersion parameters equal for all observation and uses all the observation in the estimation process.
+
+The K parameter represents the number of dimension of the latent rapresentation.
+
+The X parameter is used to indicates which variable represent the batch effect, in the same way can be inserted other cell-related variable and if you need some gene related variable those can be inserted in V.
 
 ```{r}
-res <- newWave(data,X = "~Batch", K=10, verbose = TRUE)
+res <- newWave(data, X = "~Batch", K=10, verbose = TRUE)
 ```
 
 In order to make it faster you can increase the number of cores using "children" parameter:
@@ -145,6 +164,7 @@ res2 <- newWave(data,X = "~Batch", K=10, verbose = TRUE, children=2)
 ## Commonwise dispersion and minibatch approaches
 
 If you do not have an high number of cores to run newWave this is the fastest way to run.
+
 The optimization process is done by three process itereated until convercence.
 
 + Optimization of the dispersion parameters
@@ -195,6 +215,13 @@ or for clustering:
 cluster <- kmeans(latent, 10)
 
 adjustedRandIndex(cluster$cluster, data$Group)
+```
+# NewWave on DelayedArray
+
+
+
+```{r}
+library(TENxBrainData)
 ```
 
 # Session Information
