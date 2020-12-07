@@ -129,16 +129,32 @@ sudo docker run hello-world
 </code></pre>
 <p>If Docker is installed correctly it should print something informative. To get the Docker container, it’s the same as for Windows.</p>
 <pre><code>docker run -e PASSWORD=&lt;choose_a_password_for_rstudio&gt; -p 8787:8787 fedeago/surfingnewwave</code></pre>
+<div id="knowed-issue" class="section level4">
+<h4 class="hasAnchor">
+<a href="#knowed-issue" class="anchor"></a>Knowed issue</h4>
+<p>There could be a problem running docker with the following message:</p>
+<pre><code>The system cannot find the file specified. In the default daemon configuration on Windows, the docker client must be run elevated to connect . This error may also indicate that the docker daemon is not running.
+</code></pre>
+<p>To work around this problem I opened the power shell as administrator and rn the following comand</p>
+<pre><code>cd "C:\Program Files\Docker\Docker"
+./DockerCli.exe -SwitchDaemon</code></pre>
+<p>as described in this <a href="https://stackoverflow.com/questions/40459280/docker-cannot-start-on-windows">stackoverflow question</a></p>
+</div>
 </div>
 <div id="macos" class="section level3">
 <h3 class="hasAnchor">
 <a href="#macos" class="anchor"></a>MacOS</h3>
 <p>There is an installer for MacOS. As with Windows, follow the instructions - it’s just a regular drag’n’drop install. Once it’s installed and started, open a terminal prompt and as above type.</p>
 <pre><code>docker run -e PASSWORD=&lt;choose_a_password_for_rstudio&gt; -p 8787:8787 fedeago/surfingnewwave</code></pre>
+</div>
+</div>
+<div id="run-docker" class="section level2">
+<h2 class="hasAnchor">
+<a href="#run-docker" class="anchor"></a>Run Docker</h2>
 <p>For all operating systems, once the Docker container is initialized, you can access it by opening a browser and typing</p>
 <pre><code>http://localhost:8787</code></pre>
 <p>Which should present you with an RStudio login. Use rstudio as the username and the password you used to start the Docker.</p>
-</div>
+<p>Then please open the file ‘vignettes/vignette.Rmd’ to start the workshop.</p>
 </div>
 </div>
 
