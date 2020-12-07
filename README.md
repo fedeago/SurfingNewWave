@@ -69,6 +69,24 @@ Windows.
 docker run -e PASSWORD=<choose_a_password_for_rstudio> -p 8787:8787 fedeago/surfingnewwave
 ```
 
+#### Knowed issue
+
+There could be a problem running docker with the following message:
+
+```
+The system cannot find the file specified. In the default daemon configuration on Windows, the docker client must be run elevated to connect . This error may also indicate that the docker daemon is not running.
+
+```
+
+To work around this problem I opened the power shell as administrator and rn the following comand
+
+```
+cd "C:\Program Files\Docker\Docker"
+./DockerCli.exe -SwitchDaemon
+```
+
+as described in this [stackoverflow question](https://stackoverflow.com/questions/40459280/docker-cannot-start-on-windows)
+
 ### MacOS
 
 There is an installer for MacOS. As with Windows, follow the
@@ -79,6 +97,8 @@ installed and started, open a terminal prompt and as above type.
 docker run -e PASSWORD=<choose_a_password_for_rstudio> -p 8787:8787 fedeago/surfingnewwave
 ```
 
+## Run Docker
+
 For all operating systems, once the Docker container is initialized,
 you can access it by opening a browser and typing
 
@@ -88,3 +108,6 @@ http://localhost:8787
 
 Which should present you with an RStudio login. Use rstudio as the
 username and the password you used to start the Docker.
+
+
+Then please open the file 'vignettes/vignette.Rmd' to start the workshop.
