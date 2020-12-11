@@ -28,17 +28,41 @@ In this package, we implement mini-batch stochastic gradient descent and the pos
 
 ### _R_ / _Bioconductor_ packages used
 
-* SharedObject
-* DelayedArray
-* SingleCellExperiment
-* 
+ * SharedObject
+ * DelayedArray
+ * SingleCellExperiment
+ * splatter
+ 
 
 ## Workshop goals and objectives
 
+In this workshop I am going to show how to use NewWave with different object and 
+how to choose the optimal parameter related to your hardware.
 
-# Installation
+# Introduction
 
+NewWave assumes a negative binomial distribution where the mean parameter is related
+to each single cell and the dispersion parameter can be equal to all observation or related
+to each single gene.
 
+$$ Y_{ij} \sim NB(\mu_{ij},\theta_j)$$
+And this is how the parameters are estimated:
+
+$$ \ln(\mu_{ij}) = \Big(X\beta + (V\gamma)^T + W\alpha \Big)_{ij} $$
+$$ \ln(\theta_j)   = \zeta_j$$
+NewWave is a new package that assumes a Negative Binomial distributions for dimensionality reduction and batch effect removal.
+In order to reduce the memory consumption it uses a PSOCK cluster combined with the R package SharedObject that allow to share a matrix between different cores without memory duplication. Thanks to that we can massively parallelize the estimation process with huge benefit in terms of time consumption.
+We can reduce even more the time consumption using some minibatch approaches on the different steps of the optimization.
+
+## Basic knowledge of the model
+
+I am going to show how to use NewWave with example data generated with Splatter.
+
+Splatter is a R package designed to generate single cell transcriptomic data with a high level of customization.
+
+In our implementation we want a batch effect to be corrected, the additionals batch parameters are setted in order to create more complex batch effect instead of defoult.
+
+Think to the group as a cell type, we will use those group to test the resulted low dimensional representation throught a cluster analysis.
 
 ```{r}
 suppressPackageStartupMessages(
@@ -52,20 +76,6 @@ library(NewWave)}
 )
 ```
 
-# Introduction
-
-NewWave is a new package that assumes a Negative Binomial distributions for dimensionality reduction and batch effect removal.
-In order to reduce the memory consumption it uses a PSOCK cluster combined with the R package SharedObject that allow to share a matrix between different cores without memory duplication. Thanks to that we can massively parallelize the estimation process with huge benefit in terms of time consumption.
-We can reduce even more the time consumption using some minibatch approaches on the different steps of the optimization.
-
-I am going to show how to use NewWave with example data generated with Splatter.
-
-Splatter is a R package designed to generate single cell transcriptomic data with a high level of customization.
-
-In our implementation we want a batch effect to be corrected, the additionals batch parameters are setted in order to create more complex batch effect instead of defoult.
-
-Think to the group as a cell type, we will use those group to test the resulted low dimensional representation throught a cluster analysis.
-
 ```{r}
 params <- newSplatParams()
 N=1000
@@ -78,9 +88,14 @@ data <- splatSimulateGroups(params,batchCells=c(N/2,N/2),
                            verbose = FALSE) 
 ```
 
-The resoult of splatter is a SingleCellExperiment with the generated data in the assays counts.
+The resault of splatter is a SingleCellExperiment with the generated data in the assays counts.
+
 ```{r}
 data
+```
+
+```{r}
+str(counts(data))
 ```
 
 As you can see we have the number of cell that we choose(N=500) an 10 000 genes. For this workshop we will choose only the 1000 most variable genes.
@@ -164,12 +179,6 @@ res2 <- newWave(data,X = "~Batch", K=10, verbose = TRUE, children=2)
 ## Commonwise dispersion and minibatch approaches
 
 If you do not have an high number of cores to run newWave this is the fastest way to run.
-
-The optimization process is done by three process itereated until convercence.
-
-+ Optimization of the dispersion parameters
-+ Optimization of the gene related parameters
-+ Optimization of the cell related parameters
   
 Each of these three steps can be accelerated using mini batch, the number of observation is settled with these parameters:
 
@@ -218,12 +227,59 @@ adjustedRandIndex(cluster$cluster, data$Group)
 ```
 # NewWave on DelayedArray
 
+In this package we can find a huge single cell dataset made by 1.3 M cell and 27 K genes.
 
+Thanks to the hdf5 format that we can use trougth the DelayedArray framework this dataset is not on our RAM but it can be read and used anyway.
 
 ```{r}
 library(TENxBrainData)
 ```
 
+
+```{r}
+tenx <- TENxBrainData()
+```
+
+Let's see how is made this SingleCellExperiment
+```{r}
+tenx
+```
+It has the slot counts were the date are stored exaclty how is needed by NewWave but in this case we do not have the batch effect and so we will only reduce the dimensionality of the dataset.
+
+Despite of the huge dimension of the dataset it's memory size is really small:
+
+```{r}
+object.size(tenx)
+```
+only 304 MB.
+
+This ids possible because the counts slot is not a matrix.
+```{r}
+str(counts(tenx))
+```
+
+In order to manage this type of file NewWave uses a set of proper method with some strength and some weakness.
+
+I am not going to show the exact implementation but I will explain how to use NewWave in this situation and why.
+
+The biggest strength of using DelayedArray and HDF5 files is the reduction of the RAM consumption, the cost of that is that we read only a small piece, called chunck, of the dataset every time and so if it is done not properly in can strongly slower the computation expecially we applied to an iterative optimization such as the one used by NewWave.
+
+For this reason I strongly discourage to set `verbose = T`, this wil force NewWave to read the dataset, chunk by chunk, several time for each iteration.
+
+In this first version of the package this implementation is really effective only when applied on big dataset, let's say at least 30K cell.
+
+The are some differences with the matrix implementation:
+ - there is a small aproximation in the initialization
+ - the estimation of the dispersion parameter is forced to be genewise
+ 
+The best way to use NewWave in this case is the same we see before but I will not
+run this code becouse it would be long.
+
+```{r}
+res4 <- newWave(tenx, K=10, children=2,n_gene_par = 100, n_cell_par = 100, commondispersion = FALSE)
+```
+
+ 
 # Session Information
 
 ```{r}
