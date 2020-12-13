@@ -280,7 +280,17 @@ run this code becouse it would be long.
 # res4 <- newWave(tenx, K=10, children=2,n_gene_par = 100, n_cell_par = 100, commondispersion = FALSE)
 ```
 
- 
+
+
+<!-- ```{r, out.width = "75%", echo = FALSE} -->
+<!-- knitr::include_graphics("./time_NewWave.png") -->
+<!-- ``` -->
+
+
+<!-- ```{r, out.width = "75%", echo = FALSE} -->
+<!-- knitr::include_graphics("./memory_NewWave.png") -->
+<!-- ``` -->
+
 # Session Information
 
 ```{r}
