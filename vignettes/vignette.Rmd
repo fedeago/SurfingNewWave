@@ -13,7 +13,26 @@ vignette: >
 # Introduction to NewWave
 
 EuroBioc 2020: 14-18 December
+```{r}
+library(SingleCellExperiment)
+library(splatter)
+library(irlba)
+library(Rtsne)
+library(ggplot2)
+library(mclust)
+library(NewWave)
+```
 
+```{r}
+params <- newSplatParams()
+N=1000
+data <- splatSimulateGroups(params,batchCells=c(N/2,N/2),
+                           group.prob = rep(0.1,10),
+                           de.prob = 0.2,
+                           batch.facLoc = 2,
+                           batch.facScale = 1,
+                           verbose = FALSE) 
+```
 ## Workshop Description
 
 The fast development of single cell sequencing technologies in the recent years has generated a gap between the throughput of the experiments and the capability of analizing the generated data. 
@@ -64,27 +83,7 @@ In our implementation we want a batch effect to be corrected, the additionals ba
 
 Think to the group as a cell type, we will use those group to test the resulted low dimensional representation through a cluster analysis.
 
-```{r}
-library(SingleCellExperiment)
-library(splatter)
-library(irlba)
-library(Rtsne)
-library(ggplot2)
-library(mclust)
-library(NewWave)
-```
 
-```{r}
-params <- newSplatParams()
-N=1000
-set.seed(1234)
-data <- splatSimulateGroups(params,batchCells=c(N/2,N/2),
-                           group.prob = rep(0.1,10),
-                           de.prob = 0.2,
-                           batch.facLoc = 2,
-                           batch.facScale = 1,
-                           verbose = FALSE) 
-```
 
 The resoult of splatter is a SingleCellExperiment with the generated data in the assays counts.
 
@@ -93,7 +92,7 @@ data
 ```
 
 ```{r}
-str(counts(data))
+class(counts(data))
 ```
 
 As you can see we have the number of cell that we choose(N=500) an 10 000 genes. For this workshop we will choose only the 1000 most variable genes.
@@ -251,9 +250,9 @@ object.size(tenx)
 ```
 only 304 MB.
 
-This ids possible because the counts slot is not a matrix.
+This is possible because the counts slot is not a matrix.
 ```{r}
-str(counts(tenx))
+class(counts(tenx))
 ```
 
 In order to manage this type of file NewWave uses a set of proper method with some strength and some weakness.
