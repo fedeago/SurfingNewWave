@@ -9,12 +9,6 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r, include = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>"
-)
-```
 
 # Introduction to NewWave
 
@@ -45,24 +39,31 @@ NewWave assumes a negative binomial distribution where the mean parameter is rel
 to each single cell and the dispersion parameter can be equal to all observation or related
 to each single gene.
 
-$$ Y_{ij} \sim NB(\mu_{ij},\theta_j)$$
+$$Y_{ij} \sim NB(\mu_{ij},\theta_j)$$
 And this is how the parameters are estimated:
 
-$$ \ln(\mu_{ij}) = \Big(X\beta + (V\gamma)^T + W\alpha \Big)_{ij} $$
-$$ \ln(\theta_j)   = \zeta_j$$
-NewWave is a new package that assumes a Negative Binomial distributions for dimensionality reduction and batch effect removal.
-In order to reduce the memory consumption it uses a PSOCK cluster combined with the R package SharedObject that allow to share a matrix between different cores without memory duplication. Thanks to that we can massively parallelize the estimation process with huge benefit in terms of time consumption.
-We can reduce even more the time consumption using some minibatch approaches on the different steps of the optimization.
+$$\ln(\mu_{ij}) = \Big(X\beta + (V\gamma)^T + W\alpha \Big)_{ij} $$
+$$\ln(\theta_j)   = \zeta_j$$
+These are the steps used for estimate parameters :
+ - Initialization of regression parameters parameters using ridge regression, and low-rank rapresentation with PCA.
+ - Optimization of dispersion parameters, if genewise  massively parallelizable.
+ - Optimization of the cell-related parameters, using MLE, massively parallelizable.
+ - Optimization of the gene-related parameters, using MLE, massive parallelizable.
 
-## Basic knowledge of the model
+While the initialization is done only once at the beginnig of the process the other three steps are done iteratively till convergence.
+
+In order to reduce the memory consumption it uses a PSOCK cluster combined with the R package SharedObject that allow to share a matrix between different cores without memory duplication. Thanks to that we can massively parallelize the estimation process with huge benefit in terms of time consumption.
+We can reduce even more the time consumption using some mini batch approaches on the different steps of the optimization.
+
+
 
 I am going to show how to use NewWave with example data generated with Splatter.
 
 Splatter is a R package designed to generate single cell transcriptomic data with a high level of customization.
 
-In our implementation we want a batch effect to be corrected, the additionals batch parameters are setted in order to create more complex batch effect instead of defoult.
+In our implementation we want a batch effect to be corrected, the additionals batch parameters are setted in order to create more complex batch effect instead of default.
 
-Think to the group as a cell type, we will use those group to test the resulted low dimensional representation throught a cluster analysis.
+Think to the group as a cell type, we will use those group to test the resulted low dimensional representation through a cluster analysis.
 
 ```{r}
 suppressPackageStartupMessages(
@@ -88,7 +89,7 @@ data <- splatSimulateGroups(params,batchCells=c(N/2,N/2),
                            verbose = FALSE) 
 ```
 
-The resault of splatter is a SingleCellExperiment with the generated data in the assays counts.
+The resoult of splatter is a SingleCellExperiment with the generated data in the assays counts.
 
 ```{r}
 data
