@@ -28,11 +28,11 @@ Depends:
     stats,
     SummarizedExperiment,
     TENxBrainData,
+    splatter(= 1.15.0),
     SharedObject(>= 1.3.15)
 Suggests: 
     testthat,
     rmarkdown,
-    splatter,
     mclust,
     Rtsne,
     ggplot2,
