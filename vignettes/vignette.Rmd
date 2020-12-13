@@ -277,7 +277,7 @@ The best way to use NewWave in this case is the same we see before but I will no
 run this code becouse it would be long.
 
 ```{r}
-res4 <- newWave(tenx, K=10, children=2,n_gene_par = 100, n_cell_par = 100, commondispersion = FALSE)
+# res4 <- newWave(tenx, K=10, children=2,n_gene_par = 100, n_cell_par = 100, commondispersion = FALSE)
 ```
 
  
