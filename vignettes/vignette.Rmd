@@ -25,7 +25,6 @@ In this package, we implement mini-batch stochastic gradient descent and the pos
  * SharedObject
  * DelayedArray
  * SingleCellExperiment
- * splatter
  
 
 ## Workshop goals and objectives
@@ -66,15 +65,13 @@ In our implementation we want a batch effect to be corrected, the additionals ba
 Think to the group as a cell type, we will use those group to test the resulted low dimensional representation through a cluster analysis.
 
 ```{r}
-suppressPackageStartupMessages(
-  {library(SingleCellExperiment)
+library(SingleCellExperiment)
 library(splatter)
 library(irlba)
 library(Rtsne)
 library(ggplot2)
 library(mclust)
-library(NewWave)}
-)
+library(NewWave)
 ```
 
 ```{r}
@@ -280,16 +277,16 @@ run this code becouse it would be long.
 # res4 <- newWave(tenx, K=10, children=2,n_gene_par = 100, n_cell_par = 100, commondispersion = FALSE)
 ```
 
+The following figures explain the performance of NewWave in this dataset with differents approach:
+
+```{r, out.width = "50%", echo = FALSE}
+knitr::include_graphics("./time_newWave.png")
+```
 
 
-<!-- ```{r, out.width = "75%", echo = FALSE} -->
-<!-- knitr::include_graphics("./time_NewWave.png") -->
-<!-- ``` -->
-
-
-<!-- ```{r, out.width = "75%", echo = FALSE} -->
-<!-- knitr::include_graphics("./memory_NewWave.png") -->
-<!-- ``` -->
+```{r, out.width = "50%", echo = FALSE}
+knitr::include_graphics("./memory_newWave.png")
+```
 
 # Session Information
 
