@@ -17,7 +17,7 @@ EuroBioc 2020: 14-18 December
 
 ## Workshop Description
 
-The fast development of single cell sequencing technologies in the recent years has generated a gap between the throughput of the experiments and the capability of analizing the generated data. 
+The fast development of single cell sequencing technologies in the recent years has generated a gap between the throughput of the experiments and the capability of analizing these generated data. 
 In this package, we implement mini-batch stochastic gradient descent and the possibility to work with HDF5 files. We decided to use a negative binomial model following the observation that droplet sequencing technologies do not induce zero inflation in the data. Thanks to these improvements and the possibility of massively parallelize the estimation process using PSOCK clusters, we are able to speed up the computation.
 
 
@@ -26,6 +26,8 @@ In this package, we implement mini-batch stochastic gradient descent and the pos
  * SharedObject
  * DelayedArray
  * SingleCellExperiment
+ * splatter
+ * TENxBrainData
  
 
 ## Workshop goals and objectives
@@ -36,8 +38,8 @@ how to choose the optimal parameter related to your hardware.
 # Introduction
 
 NewWave assumes a negative binomial distribution where the mean parameter is related
-to each single cell and the dispersion parameter can be equal to all observation or related
-to each single gene.
+to each single observation while the dispersion parameter can be equal for all
+observation or related to each single gene.
 
 $$Y_{ij} \sim NB(\mu_{ij},\theta_j)$$
 And this is how the parameters are estimated:
@@ -45,25 +47,31 @@ And this is how the parameters are estimated:
 $$\ln(\mu_{ij}) = \Big(X\beta + (V\gamma)^T + W\alpha \Big)_{ij} $$
 $$\ln(\theta_j)   = \zeta_j$$
 These are the steps used for estimate parameters :
- - Initialization of regression parameters parameters using ridge regression, and low-rank rapresentation with PCA.
- - Optimization of dispersion parameters, if genewise  massively parallelizable.
- - Optimization of the cell-related parameters, using MLE, massively parallelizable.
- - Optimization of the gene-related parameters, using MLE, massive parallelizable.
+* Initialization of regression parameters parameters using ridge regression, and low-rank rapresentation with PCA.
+* Optimization of dispersion parameters, if genewise  massively parallelizable.
+* Optimization of the cell-related parameters, using MLE, massively parallelizable.
+* Optimization of the gene-related parameters, using MLE, massive parallelizable.
 
-While the initialization is done only once at the beginnig of the process the other three steps are done iteratively till convergence.
+While the initialization is done only once at the beginnig of the process the other
+three steps are done iteratively till convergence.
 
-In order to reduce the memory consumption it uses a PSOCK cluster combined with the R package SharedObject that allow to share a matrix between different cores without memory duplication. Thanks to that we can massively parallelize the estimation process with huge benefit in terms of time consumption.
-We can reduce even more the time consumption using some mini batch approaches on the different steps of the optimization.
-
+In order to reduce the memory consumption it uses a PSOCK cluster combined with the R package SharedObject that allow to share a matrix between different cores avoiding memory duplication.
+Thanks to that we can massively parallelize the estimation process with huge
+benefit in terms of time consumption.
+We can reduce even more the time consumption using some mini batch approaches 
+on the different steps of the optimization.
 
 
 I am going to show how to use NewWave with example data generated with Splatter.
 
-Splatter is a R package designed to generate single cell transcriptomic data with a high level of customization.
+Splatter is a R package designed to generate single cell transcriptomic data
+with a high level of customization.
 
-In our implementation we want a batch effect to be corrected, the additionals batch parameters are setted in order to create more complex batch effect instead of default.
+In our implementation we want a batch effect to be corrected, the additionals
+batch parameters are setted in order to create more complex batch effect.
 
-Think to the group as a cell type, we will use those group to test the resulted low dimensional representation through a cluster analysis.
+You can think to the group as a cell type, we will use those group to test
+the resulted low dimensional representation through a cluster analysis.
 
 ```{r}
 suppressPackageStartupMessages(
@@ -88,7 +96,7 @@ data <- splatSimulateGroups(params,batchCells=c(N/2,N/2),
                            verbose = FALSE) 
 ```
 
-The resoult of splatter is a SingleCellExperiment with the generated data in the assays counts.
+The resault of splatter is a SingleCellExperiment with the generated data in the assays counts.
 
 ```{r}
 data
@@ -98,7 +106,8 @@ data
 class(counts(data))
 ```
 
-As you can see we have the number of cell that we choose(N=500) an 10 000 genes. For this workshop we will choose only the 1000 most variable genes.
+As you can see we have the number of cell that we choose(N=500) an 10 000 genes.
+For this workshop we will choose only the 1000 most variable genes.
 
 ```{r}
 hvg <- rowVars(counts(data))
@@ -106,7 +115,8 @@ names(hvg) <- rownames(counts(data))
 data <- data[names(sort(hvg,decreasing=TRUE))[1:500],]
 ```
 
-In a SingleCellExperiment the colData slot contains the sample level metadata. In our situation there are two important variable, Batch and Group.
+In a SingleCellExperiment the colData slot contains the sample level metadata.
+In our situation there are two important variable, Batch and Group.
 
 ```{r}
 colData(data)
@@ -119,8 +129,6 @@ data$Batch <- as.factor(data$Batch)
 ```
 
 NewWave takes as input raw data, not normalized. So now we have all the object needed to start.
-
-
 
 We can see the how the cells are distributed between group and batch.
 
@@ -137,14 +145,16 @@ plot_data$group <- data$Group
 ```{r}
 ggplot(plot_data, aes(x=X1,y=X2,col=group, shape=batch))+ geom_point()
 ```
-Just for a later comparison let's see the performance of clustering on PCA low dimensional representation.
+
+
+Just for a later comparison we can see the performance of clustering on
+PCA low dimensional representation.
 
 ```{r}
 cluster <- kmeans(pca$x, 10)
 
 adjustedRandIndex(cluster$cluster, data$Group)
 ```
-
 There is a clear batch effect between the cells.
 
 Let's try to correct it.
@@ -164,13 +174,16 @@ I am going to present the stadard implementation of NewWave, it uses 1 cores, it
 
 The K parameter represents the number of dimension of the latent rapresentation.
 
-The X parameter is used to indicates which variable represent the batch effect, in the same way can be inserted other cell-related variable and if you need some gene related variable those can be inserted in V.
+The X parameter is used to indicates which variable represent the batch effect,
+in the same way can be inserted other cell-related variable and if you need some
+gene related variable those can be inserted in V.
 
 ```{r}
 res <- newWave(data, X = "~Batch", K=10, verbose = TRUE)
 ```
 
-In order to make it faster you can increase the number of cores using "children" parameter:
+In order to make it faster you can increase the number of cores using `children`
+parameter:
 
 ```{r}
 res2 <- newWave(data,X = "~Batch", K=10, verbose = TRUE, children=2)
@@ -180,7 +193,8 @@ res2 <- newWave(data,X = "~Batch", K=10, verbose = TRUE, children=2)
 
 If you do not have an high number of cores to run newWave this is the fastest way to run.
   
-Each of these three steps can be accelerated using mini batch, the number of observation is settled with these parameters:
+Each of these three steps can be accelerated using mini batch, the number of
+observation is settled with these parameters:
 
 + n_gene_disp : Number of genes to use in the dispersion optimization
 + n_cell_par : Number of cells to use in the cells related parameters
@@ -195,14 +209,15 @@ res3 <- newWave(data,X = "~Batch", verbose = TRUE,K=10, children=2,
 
 ## Genewise dispersion mini-batch
 
-If you have a lot of core disposable or you want to estimate a genewise dispersion parameter this is the fastes configuration:
+If you have a lot of core disposable or you want to estimate a genewise
+dispersion parameter this is the fastest configuration:
 
+**IMPORTANT**:do not use n_gene_disp in this case, it will slower the computation.
 ```{r}
 res3 <- newWave(data,X = "~Batch", verbose = TRUE,K=10, children=2,
                 n_gene_par = 100, n_cell_par = 100, commondispersion = FALSE)
 ```
 
-NB: do not use n_gene_disp in this case, it will slower the computation.
 
 Now I can use the latent dimension rapresentation for visualization purpose:
 
@@ -232,7 +247,7 @@ In this package we can find a huge single cell dataset made by 1.3 M cell and 27
 Thanks to the hdf5 format that we can use trougth the DelayedArray framework this dataset is not on our RAM but it can be read and used anyway.
 
 ```{r}
-library(TENxBrainData)
+suppressPackageStartupMessages(library(TENxBrainData))
 ```
 
 
@@ -262,18 +277,24 @@ In order to manage this type of file NewWave uses a set of proper method with so
 
 I am not going to show the exact implementation but I will explain how to use NewWave in this situation and why.
 
-The biggest strength of using DelayedArray and HDF5 files is the reduction of the RAM consumption, the cost of that is that we read only a small piece, called chunck, of the dataset every time and so if it is done not properly in can strongly slower the computation expecially we applied to an iterative optimization such as the one used by NewWave.
+The biggest strength of using DelayedArray and HDF5 files is the reduction of
+the RAM consumption, the cost of that is that we read only a small piece,
+called chunck, of the dataset every time and so if it is done not properly in
+can strongly slower the computation expecially when it is applied to an 
+iterative optimization such as the one used by NewWave.
 
-For this reason I strongly discourage to set `verbose = T`, this wil force NewWave to read the dataset, chunk by chunk, several time for each iteration.
+For this reason I strongly discourage to set `verbose = T`, this will force
+NewWave to read the dataset, chunk by chunk, several time for each iteration.
 
-In this first version of the package this implementation is really effective only when applied on big dataset, let's say at least 30K cell.
+In this first version of the package this implementation is really effective
+only when applied on big dataset, let's say at least 30K cell.
 
 The are some differences with the matrix implementation:
- - there is a small aproximation in the initialization
- - the estimation of the dispersion parameter is forced to be genewise
+ * there is a small aproximation in the initialization
+ * the estimation of the dispersion parameter is forced to be genewise
  
 The best way to use NewWave in this case is the same we see before but I will not
-run this code becouse it would be long.
+run this code because it would be long.
 
 ```{r}
 # res4 <- newWave(tenx, K=10, children=2,n_gene_par = 100, n_cell_par = 100, commondispersion = FALSE)
