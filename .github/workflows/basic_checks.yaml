@@ -1,4 +1,10 @@
-on: [push]
+on: [push, pull_request]
+env:
+  cache-version: v1
+  # Change the following line to what you want YOUR
+  # docker image to be called. Do not include 
+  # any tags--those will be added automatically
+  repo-name: fedeago/surfingnewwave
 jobs:
   job1:
     runs-on: ubuntu-latest
