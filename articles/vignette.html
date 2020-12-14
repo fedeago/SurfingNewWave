@@ -45,7 +45,7 @@
       <ul class="nav navbar-nav">
 <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -68,7 +68,7 @@
 <ul class="nav navbar-nav navbar-right">
 <li>
   <a href="https://github.com/fedeago/SurfingNewWave">
-    <span class="fa fa-github"></span>
+    <span class="fas fa-github"></span>
      
   </a>
 </li>
@@ -82,8 +82,7 @@
 
       
 
-      </header><script src="vignette_files/accessible-code-block-0.0.1/empty-anchor.js"></script><link href="vignette_files/anchor-sections-1.0/anchor-sections.css" rel="stylesheet">
-<script src="vignette_files/anchor-sections-1.0/anchor-sections.js"></script><div class="row">
+      </header><script src="vignette_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>EuroBioc2020 NewWave workshop</h1>
@@ -103,7 +102,7 @@
 <div id="workshop-description" class="section level2">
 <h2 class="hasAnchor">
 <a href="#workshop-description" class="anchor"></a>Workshop Description</h2>
-<p>The fast development of single cell sequencing technologies in the recent years has generated a gap between the throughput of the experiments and the capability of analizing the generated data. In this package, we implement mini-batch stochastic gradient descent and the possibility to work with HDF5 files. We decided to use a negative binomial model following the observation that droplet sequencing technologies do not induce zero inflation in the data. Thanks to these improvements and the possibility of massively parallelize the estimation process using PSOCK clusters, we are able to speed up the computation.</p>
+<p>The fast development of single cell sequencing technologies in the recent years has generated a gap between the throughput of the experiments and the capability of analizing these generated data. In this package, we implement mini-batch stochastic gradient descent and the possibility to work with HDF5 files. We decided to use a negative binomial model following the observation that droplet sequencing technologies do not induce zero inflation in the data. Thanks to these improvements and the possibility of massively parallelize the estimation process using PSOCK clusters, we are able to speed up the computation.</p>
 <div id="r-bioconductor-packages-used" class="section level3">
 <h3 class="hasAnchor">
 <a href="#r-bioconductor-packages-used" class="anchor"></a><em>R</em> / <em>Bioconductor</em> packages used</h3>
@@ -111,6 +110,8 @@
 <li>SharedObject</li>
 <li>DelayedArray</li>
 <li>SingleCellExperiment</li>
+<li>splatter</li>
+<li>TENxBrainData</li>
 </ul>
 </div>
 </div>
@@ -123,15 +124,15 @@
 <div id="introduction" class="section level1">
 <h1 class="hasAnchor">
 <a href="#introduction" class="anchor"></a>Introduction</h1>
-<p>NewWave assumes a negative binomial distribution where the mean parameter is related to each single cell and the dispersion parameter can be equal to all observation or related to each single gene.</p>
+<p>NewWave assumes a negative binomial distribution where the mean parameter is related to each single observation while the dispersion parameter can be equal for all observation or related to each single gene.</p>
 <p><span class="math display">\[Y_{ij} \sim NB(\mu_{ij},\theta_j)\]</span> And this is how the parameters are estimated:</p>
-<p><span class="math display">\[\ln(\mu_{ij}) = \Big(X\beta + (V\gamma)^T + W\alpha \Big)_{ij} \]</span> <span class="math display">\[\ln(\theta_j)   = \zeta_j\]</span> These are the steps used for estimate parameters : - Initialization of regression parameters parameters using ridge regression, and low-rank rapresentation with PCA. - Optimization of dispersion parameters, if genewise massively parallelizable. - Optimization of the cell-related parameters, using MLE, massively parallelizable. - Optimization of the gene-related parameters, using MLE, massive parallelizable.</p>
+<p><span class="math display">\[\ln(\mu_{ij}) = \Big(X\beta + (V\gamma)^T + W\alpha \Big)_{ij} \]</span> <span class="math display">\[\ln(\theta_j)   = \zeta_j\]</span> These are the steps used for estimate parameters : * Initialization of regression parameters parameters using ridge regression, and low-rank rapresentation with PCA. * Optimization of dispersion parameters, if genewise massively parallelizable. * Optimization of the cell-related parameters, using MLE, massively parallelizable. * Optimization of the gene-related parameters, using MLE, massive parallelizable.</p>
 <p>While the initialization is done only once at the beginnig of the process the other three steps are done iteratively till convergence.</p>
-<p>In order to reduce the memory consumption it uses a PSOCK cluster combined with the R package SharedObject that allow to share a matrix between different cores without memory duplication. Thanks to that we can massively parallelize the estimation process with huge benefit in terms of time consumption. We can reduce even more the time consumption using some mini batch approaches on the different steps of the optimization.</p>
+<p>In order to reduce the memory consumption it uses a PSOCK cluster combined with the R package SharedObject that allow to share a matrix between different cores avoiding memory duplication. Thanks to that we can massively parallelize the estimation process with huge benefit in terms of time consumption. We can reduce even more the time consumption using some mini batch approaches on the different steps of the optimization.</p>
 <p>I am going to show how to use NewWave with example data generated with Splatter.</p>
 <p>Splatter is a R package designed to generate single cell transcriptomic data with a high level of customization.</p>
-<p>In our implementation we want a batch effect to be corrected, the additionals batch parameters are setted in order to create more complex batch effect instead of default.</p>
-<p>Think to the group as a cell type, we will use those group to test the resulted low dimensional representation through a cluster analysis.</p>
+<p>In our implementation we want a batch effect to be corrected, the additionals batch parameters are setted in order to create more complex batch effect.</p>
+<p>You can think to the group as a cell type, we will use those group to test the resulted low dimensional representation through a cluster analysis.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/message.html">suppressPackageStartupMessages</a></span><span class="op">(</span>
   <span class="op">{</span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">SingleCellExperiment</span><span class="op">)</span>
@@ -151,7 +152,7 @@
                            batch.facLoc <span class="op">=</span> <span class="fl">2</span>,
                            batch.facScale <span class="op">=</span> <span class="fl">1</span>,
                            verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> </code></pre></div>
-<p>The resoult of splatter is a SingleCellExperiment with the generated data in the assays counts.</p>
+<p>The resault of splatter is a SingleCellExperiment with the generated data in the assays counts.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">data</span></code></pre></div>
 <pre><code>## class: SingleCellExperiment 
@@ -202,7 +203,8 @@
 <span class="va">plot_data</span><span class="op">$</span><span class="va">group</span> <span class="op">&lt;-</span> <span class="va">data</span><span class="op">$</span><span class="va">Group</span></code></pre></div>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">plot_data</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">X1</span>,y<span class="op">=</span><span class="va">X2</span>,col<span class="op">=</span><span class="va">group</span>, shape<span class="op">=</span><span class="va">batch</span><span class="op">)</span><span class="op">)</span><span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<p><img src="vignette_files/figure-html/unnamed-chunk-10-1.png" width="700"> Just for a later comparison let’s see the performance of clustering on PCA low dimensional representation.</p>
+<p><img src="vignette_files/figure-html/unnamed-chunk-10-1.png" width="700"></p>
+<p>Just for a later comparison we can see the performance of clustering on PCA low dimensional representation.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">cluster</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/kmeans.html">kmeans</a></span><span class="op">(</span><span class="va">pca</span><span class="op">$</span><span class="va">x</span>, <span class="fl">10</span><span class="op">)</span>
 
@@ -230,145 +232,145 @@
 <code class="sourceCode R"><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/NewWave/man/newWave.html">newWave</a></span><span class="op">(</span><span class="va">data</span>, X <span class="op">=</span> <span class="st">"~Batch"</span>, K<span class="op">=</span><span class="fl">10</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
 <pre><code>## Time of setup
 ##    user  system elapsed 
-##   0.013   0.000   0.272 
+##   0.008   0.005   0.272 
 ## Time of initialization
 ##    user  system elapsed 
-##   0.052   0.016   0.825</code></pre>
+##   0.046   0.027   0.822</code></pre>
 <pre><code>## Iteration 1</code></pre>
 <pre><code>## penalized log-likelihood = -2039588.42312985</code></pre>
 <pre><code>## Time of dispersion optimization
 ##    user  system elapsed 
-##   1.171   0.079   1.218</code></pre>
+##   1.193   0.072   1.236</code></pre>
 <pre><code>## after optimize dispersion = -1761061.82409032</code></pre>
 <pre><code>## Time of right optimization
 ##    user  system elapsed 
-##   0.001   0.000   9.788</code></pre>
+##    0.00    0.00    9.86</code></pre>
 <pre><code>## after right optimization= -1713687.47900254</code></pre>
 <pre><code>## after orthogonalization = -1713683.75718161</code></pre>
 <pre><code>## Time of left optimization
 ##    user  system elapsed 
-##   0.031   0.016   9.320</code></pre>
+##   0.030   0.016   9.457</code></pre>
 <pre><code>## after left optimization= -1707523.64825206</code></pre>
 <pre><code>## after orthogonalization = -1707523.27582134</code></pre>
 <pre><code>## Iteration 2</code></pre>
 <pre><code>## penalized log-likelihood = -1707523.27582134</code></pre>
 <pre><code>## Time of dispersion optimization
 ##    user  system elapsed 
-##   1.287   0.120   1.276</code></pre>
+##   1.307   0.112   1.289</code></pre>
 <pre><code>## after optimize dispersion = -1706425.20511649</code></pre>
 <pre><code>## Time of right optimization
 ##    user  system elapsed 
-##   0.000   0.001  10.029</code></pre>
+##   0.000   0.000  10.104</code></pre>
 <pre><code>## after right optimization= -1705900.36994457</code></pre>
 <pre><code>## after orthogonalization = -1705900.30326209</code></pre>
 <pre><code>## Time of left optimization
 ##    user  system elapsed 
-##   0.036   0.012  10.091</code></pre>
+##   0.016   0.032  10.107</code></pre>
 <pre><code>## after left optimization= -1705684.63698912</code></pre>
 <pre><code>## after orthogonalization = -1705684.60936773</code></pre>
 <pre><code>## Iteration 3</code></pre>
 <pre><code>## penalized log-likelihood = -1705684.60936773</code></pre>
 <pre><code>## Time of dispersion optimization
 ##    user  system elapsed 
-##   1.292   0.068   1.231</code></pre>
+##   1.295   0.072   1.236</code></pre>
 <pre><code>## after optimize dispersion = -1705681.14456135</code></pre>
 <pre><code>## Time of right optimization
 ##    user  system elapsed 
-##   0.001   0.000   9.342</code></pre>
+##   0.001   0.000   9.393</code></pre>
 <pre><code>## after right optimization= -1705571.1538119</code></pre>
 <pre><code>## after orthogonalization = -1705571.14479676</code></pre>
 <pre><code>## Time of left optimization
 ##    user  system elapsed 
-##   0.017   0.032   9.706</code></pre>
+##   0.022   0.024   9.717</code></pre>
 <pre><code>## after left optimization= -1705504.25290166</code></pre>
 <pre><code>## after orthogonalization = -1705504.25143127</code></pre>
 <pre><code>## Iteration 4</code></pre>
 <pre><code>## penalized log-likelihood = -1705504.25143127</code></pre>
 <pre><code>## Time of dispersion optimization
 ##    user  system elapsed 
-##   1.281   0.087   1.238</code></pre>
+##   1.301   0.068   1.238</code></pre>
 <pre><code>## after optimize dispersion = -1705504.12775755</code></pre>
 <pre><code>## Time of right optimization
 ##    user  system elapsed 
-##   0.000   0.001   8.060</code></pre>
+##   0.000   0.001   8.131</code></pre>
 <pre><code>## after right optimization= -1705457.08298441</code></pre>
 <pre><code>## after orthogonalization = -1705457.0788763</code></pre>
 <pre><code>## Time of left optimization
 ##    user  system elapsed 
-##   0.028   0.020   9.168</code></pre>
+##   0.026   0.024   9.166</code></pre>
 <pre><code>## after left optimization= -1705423.93217403</code></pre>
 <pre><code>## after orthogonalization = -1705423.93133366</code></pre>
-<p>In order to make it faster you can increase the number of cores using “children” parameter:</p>
+<p>In order to make it faster you can increase the number of cores using <code>children</code> parameter:</p>
 <div class="sourceCode" id="cb58"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">res2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/NewWave/man/newWave.html">newWave</a></span><span class="op">(</span><span class="va">data</span>,X <span class="op">=</span> <span class="st">"~Batch"</span>, K<span class="op">=</span><span class="fl">10</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span>, children<span class="op">=</span><span class="fl">2</span><span class="op">)</span></code></pre></div>
 <pre><code>## Time of setup
 ##    user  system elapsed 
-##   0.012   0.000   0.272 
+##   0.011   0.000   0.283 
 ## Time of initialization
 ##    user  system elapsed 
-##   0.041   0.016   0.682</code></pre>
+##   0.049   0.008   0.675</code></pre>
 <pre><code>## Iteration 1</code></pre>
 <pre><code>## penalized log-likelihood = -2039588.4231303</code></pre>
 <pre><code>## Time of dispersion optimization
 ##    user  system elapsed 
-##   1.161   0.031   1.146</code></pre>
+##   1.173   0.028   1.153</code></pre>
 <pre><code>## after optimize dispersion = -1761061.82409008</code></pre>
 <pre><code>## Time of right optimization
 ##    user  system elapsed 
-##   0.000   0.000   9.862</code></pre>
+##   0.001   0.000  10.923</code></pre>
 <pre><code>## after right optimization= -1713687.47899673</code></pre>
 <pre><code>## after orthogonalization = -1713683.7571758</code></pre>
 <pre><code>## Time of left optimization
 ##    user  system elapsed 
-##   0.014   0.008   4.823</code></pre>
+##   0.028   0.012   4.874</code></pre>
 <pre><code>## after left optimization= -1707523.64824653</code></pre>
 <pre><code>## after orthogonalization = -1707523.27581579</code></pre>
 <pre><code>## Iteration 2</code></pre>
 <pre><code>## penalized log-likelihood = -1707523.27581579</code></pre>
 <pre><code>## Time of dispersion optimization
 ##    user  system elapsed 
-##   1.301   0.068   1.238</code></pre>
+##   1.320   0.056   1.246</code></pre>
 <pre><code>## after optimize dispersion = -1706425.20510817</code></pre>
 <pre><code>## Time of right optimization
 ##    user  system elapsed 
-##   0.000   0.000  11.284</code></pre>
+##   0.001   0.000  10.753</code></pre>
 <pre><code>## after right optimization= -1705900.36993789</code></pre>
 <pre><code>## after orthogonalization = -1705900.30325539</code></pre>
 <pre><code>## Time of left optimization
 ##    user  system elapsed 
-##   0.005   0.016   5.235</code></pre>
+##   0.029   0.020   5.199</code></pre>
 <pre><code>## after left optimization= -1705684.63517902</code></pre>
 <pre><code>## after orthogonalization = -1705684.60756164</code></pre>
 <pre><code>## Iteration 3</code></pre>
 <pre><code>## penalized log-likelihood = -1705684.60756164</code></pre>
 <pre><code>## Time of dispersion optimization
 ##    user  system elapsed 
-##   1.301   0.080   1.249</code></pre>
+##   1.330   0.055   1.254</code></pre>
 <pre><code>## after optimize dispersion = -1705681.14284763</code></pre>
 <pre><code>## Time of right optimization
 ##    user  system elapsed 
-##   0.000   0.000  10.187</code></pre>
+##    0.00    0.00    9.32</code></pre>
 <pre><code>## after right optimization= -1705571.1695862</code></pre>
 <pre><code>## after orthogonalization = -1705571.1605932</code></pre>
 <pre><code>## Time of left optimization
 ##    user  system elapsed 
-##   0.014   0.005   4.952</code></pre>
+##   0.011   0.013   5.013</code></pre>
 <pre><code>## after left optimization= -1705504.20779332</code></pre>
 <pre><code>## after orthogonalization = -1705504.20630812</code></pre>
 <pre><code>## Iteration 4</code></pre>
 <pre><code>## penalized log-likelihood = -1705504.20630812</code></pre>
 <pre><code>## Time of dispersion optimization
 ##    user  system elapsed 
-##   1.324   0.060   1.255</code></pre>
+##   1.319   0.068   1.255</code></pre>
 <pre><code>## after optimize dispersion = -1705504.08277459</code></pre>
 <pre><code>## Time of right optimization
 ##    user  system elapsed 
-##   0.001   0.000   8.400</code></pre>
+##   0.001   0.000   9.065</code></pre>
 <pre><code>## after right optimization= -1705457.02800826</code></pre>
 <pre><code>## after orthogonalization = -1705457.02385328</code></pre>
 <pre><code>## Time of left optimization
 ##    user  system elapsed 
-##   0.012   0.020   4.865</code></pre>
+##   0.016   0.032   4.922</code></pre>
 <pre><code>## after left optimization= -1705423.80432659</code></pre>
 <pre><code>## after orthogonalization = -1705423.80345976</code></pre>
 </div>
@@ -387,121 +389,121 @@
                 n_gene_disp <span class="op">=</span> <span class="fl">100</span>, n_gene_par <span class="op">=</span> <span class="fl">100</span>, n_cell_par <span class="op">=</span> <span class="fl">100</span><span class="op">)</span></code></pre></div>
 <pre><code>## Time of setup
 ##    user  system elapsed 
-##   0.009   0.004   0.284 
+##   0.011   0.000   0.284 
 ## Time of initialization
 ##    user  system elapsed 
-##   0.056   0.004   0.649</code></pre>
+##   0.043   0.024   0.651</code></pre>
 <pre><code>## Iteration 1</code></pre>
 <pre><code>## penalized log-likelihood = -2039588.42312966</code></pre>
 <pre><code>## Time of dispersion optimization
 ##    user  system elapsed 
-##   1.161   0.040   1.159</code></pre>
+##   1.180   0.028   1.163</code></pre>
 <pre><code>## after optimize dispersion = -1761061.82409047</code></pre>
 <pre><code>## Time of right optimization
 ##    user  system elapsed 
-##   0.001   0.000  10.766</code></pre>
+##   0.000   0.000  10.365</code></pre>
 <pre><code>## after right optimization= -1713687.47900281</code></pre>
 <pre><code>## after orthogonalization = -1713683.75718187</code></pre>
 <pre><code>## Time of left optimization
 ##    user  system elapsed 
-##   0.009   0.040   4.844</code></pre>
+##   0.017   0.008   4.862</code></pre>
 <pre><code>## after left optimization= -1707523.64825239</code></pre>
 <pre><code>## after orthogonalization = -1707523.27582166</code></pre>
 <pre><code>## Iteration 2</code></pre>
 <pre><code>## penalized log-likelihood = -1707523.27582166</code></pre>
 <pre><code>## Time of dispersion optimization
 ##    user  system elapsed 
-##   0.460   0.068   0.397</code></pre>
+##   0.438   0.096   0.402</code></pre>
 <pre><code>## after optimize dispersion = -1706425.61873959</code></pre>
 <pre><code>## Time of right optimization
 ##    user  system elapsed 
-##   0.001   0.000   2.180</code></pre>
-<pre><code>## after right optimization= -1706327.39252504</code></pre>
-<pre><code>## after orthogonalization = -1706327.38967852</code></pre>
+##   0.001   0.000   2.130</code></pre>
+<pre><code>## after right optimization= -1706314.13185101</code></pre>
+<pre><code>## after orthogonalization = -1706314.12339951</code></pre>
 <pre><code>## Time of left optimization
 ##    user  system elapsed 
-##   0.006   0.004   0.504</code></pre>
-<pre><code>## after left optimization= -1706321.8969368</code></pre>
-<pre><code>## after orthogonalization = -1706321.89669844</code></pre>
+##   0.020   0.016   0.552</code></pre>
+<pre><code>## after left optimization= -1706307.64922279</code></pre>
+<pre><code>## after orthogonalization = -1706307.64894363</code></pre>
 <pre><code>## Iteration 3</code></pre>
-<pre><code>## penalized log-likelihood = -1706321.89669844</code></pre>
+<pre><code>## penalized log-likelihood = -1706307.64894363</code></pre>
 <pre><code>## Time of dispersion optimization
 ##    user  system elapsed 
-##   0.449   0.079   0.410</code></pre>
-<pre><code>## after optimize dispersion = -1706321.89669844</code></pre>
+##   0.473   0.060   0.402</code></pre>
+<pre><code>## after optimize dispersion = -1706307.64894363</code></pre>
 <pre><code>## Time of right optimization
 ##    user  system elapsed 
-##   0.001   0.000   1.932</code></pre>
-<pre><code>## after right optimization= -1706246.61134423</code></pre>
-<pre><code>## after orthogonalization = -1706246.6063916</code></pre>
+##   0.000   0.000   1.869</code></pre>
+<pre><code>## after right optimization= -1706225.83894611</code></pre>
+<pre><code>## after orthogonalization = -1706225.83305468</code></pre>
 <pre><code>## Time of left optimization
 ##    user  system elapsed 
-##   0.016   0.028   0.510</code></pre>
-<pre><code>## after left optimization= -1706238.76826242</code></pre>
-<pre><code>## after orthogonalization = -1706238.76792934</code></pre>
+##   0.012   0.036   0.535</code></pre>
+<pre><code>## after left optimization= -1706215.59998116</code></pre>
+<pre><code>## after orthogonalization = -1706215.59943099</code></pre>
 </div>
 <div id="genewise-dispersion-mini-batch" class="section level2">
 <h2 class="hasAnchor">
 <a href="#genewise-dispersion-mini-batch" class="anchor"></a>Genewise dispersion mini-batch</h2>
-<p>If you have a lot of core disposable or you want to estimate a genewise dispersion parameter this is the fastes configuration:</p>
+<p>If you have a lot of core disposable or you want to estimate a genewise dispersion parameter this is the fastest configuration:</p>
+<p><strong>IMPORTANT</strong>:do not use n_gene_disp in this case, it will slower the computation.</p>
 <div class="sourceCode" id="cb132"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">res3</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/NewWave/man/newWave.html">newWave</a></span><span class="op">(</span><span class="va">data</span>,X <span class="op">=</span> <span class="st">"~Batch"</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span>,K<span class="op">=</span><span class="fl">10</span>, children<span class="op">=</span><span class="fl">2</span>,
                 n_gene_par <span class="op">=</span> <span class="fl">100</span>, n_cell_par <span class="op">=</span> <span class="fl">100</span>, commondispersion <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></code></pre></div>
 <pre><code>## Time of setup
 ##    user  system elapsed 
-##   0.012   0.000   0.301 
+##   0.011   0.000   0.278 
 ## Time of initialization
 ##    user  system elapsed 
-##   0.057   0.000   0.666</code></pre>
+##   0.053   0.004   0.641</code></pre>
 <pre><code>## Iteration 1</code></pre>
 <pre><code>## penalized log-likelihood = -2039588.42312965</code></pre>
 <pre><code>## Time of dispersion optimization
 ##    user  system elapsed 
-##   1.177   0.032   1.159</code></pre>
+##   1.177   0.024   1.153</code></pre>
 <pre><code>## after optimize dispersion = -1761061.82409002</code></pre>
 <pre><code>## Time of right optimization
 ##    user  system elapsed 
-##   0.000   0.000   9.928</code></pre>
+##   0.000   0.000  10.277</code></pre>
 <pre><code>## after right optimization= -1713687.4790026</code></pre>
 <pre><code>## after orthogonalization = -1713683.75718167</code></pre>
 <pre><code>## Time of left optimization
 ##    user  system elapsed 
-##   0.016   0.009   4.813</code></pre>
+##   0.016   0.017   4.878</code></pre>
 <pre><code>## after left optimization= -1707523.64825382</code></pre>
 <pre><code>## after orthogonalization = -1707523.27582308</code></pre>
 <pre><code>## Iteration 2</code></pre>
 <pre><code>## penalized log-likelihood = -1707523.27582308</code></pre>
 <pre><code>## Time of dispersion optimization
 ##    user  system elapsed 
-##   0.135   0.060   0.997</code></pre>
+##   0.133   0.068   0.978</code></pre>
 <pre><code>## after optimize dispersion = -1699896.68204854</code></pre>
 <pre><code>## Time of right optimization
 ##    user  system elapsed 
-##   0.001   0.001   2.235</code></pre>
-<pre><code>## after right optimization= -1699807.23326475</code></pre>
-<pre><code>## after orthogonalization = -1699807.22753909</code></pre>
+##   0.001   0.000   2.453</code></pre>
+<pre><code>## after right optimization= -1699807.53377703</code></pre>
+<pre><code>## after orthogonalization = -1699807.51949525</code></pre>
 <pre><code>## Time of left optimization
 ##    user  system elapsed 
-##   0.012   0.004   0.588</code></pre>
-<pre><code>## after left optimization= -1699759.30764469</code></pre>
-<pre><code>## after orthogonalization = -1699759.30700368</code></pre>
+##   0.013   0.028   0.583</code></pre>
+<pre><code>## after left optimization= -1699759.85435883</code></pre>
+<pre><code>## after orthogonalization = -1699759.85382331</code></pre>
 <pre><code>## Iteration 3</code></pre>
-<pre><code>## penalized log-likelihood = -1699759.30700368</code></pre>
+<pre><code>## penalized log-likelihood = -1699759.85382331</code></pre>
 <pre><code>## Time of dispersion optimization
 ##    user  system elapsed 
-##   0.140   0.068   0.475</code></pre>
-<pre><code>## after optimize dispersion = -1699759.59148666</code></pre>
+##   0.156   0.048   0.459</code></pre>
+<pre><code>## after optimize dispersion = -1699760.1360841</code></pre>
 <pre><code>## Time of right optimization
 ##    user  system elapsed 
-##   0.000   0.000   2.178</code></pre>
-<pre><code>## after right optimization= -1699685.00985858</code></pre>
-<pre><code>## after orthogonalization = -1699685.00415704</code></pre>
+##   0.001   0.000   2.147</code></pre>
+<pre><code>## after right optimization= -1699687.52386648</code></pre>
+<pre><code>## after orthogonalization = -1699687.51950177</code></pre>
 <pre><code>## Time of left optimization
 ##    user  system elapsed 
-##   0.010   0.028   0.594</code></pre>
-<pre><code>## after left optimization= -1699644.49645809</code></pre>
-<pre><code>## after orthogonalization = -1699644.49580404</code></pre>
-<p>NB: do not use n_gene_disp in this case, it will slower the computation.</p>
+##   0.010   0.009   0.588</code></pre>
+<pre><code>## after left optimization= -1699642.11626436</code></pre>
+<pre><code>## after orthogonalization = -1699642.11572079</code></pre>
 <p>Now I can use the latent dimension rapresentation for visualization purpose:</p>
 <div class="sourceCode" id="cb164"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">latent</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/SingleCellExperiment/man/reducedDims.html">reducedDim</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span>
@@ -526,25 +528,17 @@
 <p>In this package we can find a huge single cell dataset made by 1.3 M cell and 27 K genes.</p>
 <p>Thanks to the hdf5 format that we can use trougth the DelayedArray framework this dataset is not on our RAM but it can be read and used anyway.</p>
 <div class="sourceCode" id="cb168"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">TENxBrainData</span><span class="op">)</span></code></pre></div>
-<pre><code>## Loading required package: HDF5Array</code></pre>
-<pre><code>## Loading required package: DelayedArray</code></pre>
-<pre><code>## 
-## Attaching package: 'DelayedArray'</code></pre>
-<pre><code>## The following objects are masked from 'package:base':
-## 
-##     aperm, apply, rowsum, scale, sweep</code></pre>
-<pre><code>## Loading required package: rhdf5</code></pre>
-<div class="sourceCode" id="cb174"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/message.html">suppressPackageStartupMessages</a></span><span class="op">(</span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">TENxBrainData</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<div class="sourceCode" id="cb169"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">tenx</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/TENxBrainData/man/TENxBrainData.html">TENxBrainData</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<pre><code>## using temporary cache /tmp/RtmpfQoD2w/BiocFileCache</code></pre>
-<pre><code>## snapshotDate(): 2020-12-09</code></pre>
+<pre><code>## using temporary cache /tmp/RtmplHhfqw/BiocFileCache</code></pre>
+<pre><code>## snapshotDate(): 2020-12-14</code></pre>
 <pre><code>## see ?TENxBrainData and browseVignettes('TENxBrainData') for documentation</code></pre>
 <pre><code>## downloading 1 resources</code></pre>
 <pre><code>## retrieving 1 resource</code></pre>
 <pre><code>## loading from cache</code></pre>
 <p>Let’s see how is made this SingleCellExperiment</p>
-<div class="sourceCode" id="cb181"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb176"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">tenx</span></code></pre></div>
 <pre><code>## class: SingleCellExperiment 
 ## dim: 27998 1306127 
@@ -559,24 +553,24 @@
 ## altExpNames(0):</code></pre>
 <p>It has the slot counts were the date are stored exaclty how is needed by NewWave but in this case we do not have the batch effect and so we will only reduce the dimensionality of the dataset.</p>
 <p>Despite of the huge dimension of the dataset it’s memory size is really small:</p>
-<div class="sourceCode" id="cb183"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb178"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/object.size.html">object.size</a></span><span class="op">(</span><span class="va">tenx</span><span class="op">)</span></code></pre></div>
 <pre><code>## 304126984 bytes</code></pre>
 <p>only 304 MB.</p>
 <p>This is possible because the counts slot is not a matrix.</p>
-<div class="sourceCode" id="cb185"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb180"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/class.html">class</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/SingleCellExperiment/man/assays.html">counts</a></span><span class="op">(</span><span class="va">tenx</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <pre><code>## [1] "DelayedMatrix"
 ## attr(,"package")
 ## [1] "DelayedArray"</code></pre>
 <p>In order to manage this type of file NewWave uses a set of proper method with some strength and some weakness.</p>
 <p>I am not going to show the exact implementation but I will explain how to use NewWave in this situation and why.</p>
-<p>The biggest strength of using DelayedArray and HDF5 files is the reduction of the RAM consumption, the cost of that is that we read only a small piece, called chunck, of the dataset every time and so if it is done not properly in can strongly slower the computation expecially we applied to an iterative optimization such as the one used by NewWave.</p>
-<p>For this reason I strongly discourage to set <code>verbose = T</code>, this wil force NewWave to read the dataset, chunk by chunk, several time for each iteration.</p>
+<p>The biggest strength of using DelayedArray and HDF5 files is the reduction of the RAM consumption, the cost of that is that we read only a small piece, called chunck, of the dataset every time and so if it is done not properly in can strongly slower the computation expecially when it is applied to an iterative optimization such as the one used by NewWave.</p>
+<p>For this reason I strongly discourage to set <code>verbose = T</code>, this will force NewWave to read the dataset, chunk by chunk, several time for each iteration.</p>
 <p>In this first version of the package this implementation is really effective only when applied on big dataset, let’s say at least 30K cell.</p>
-<p>The are some differences with the matrix implementation: - there is a small aproximation in the initialization - the estimation of the dispersion parameter is forced to be genewise</p>
-<p>The best way to use NewWave in this case is the same we see before but I will not run this code becouse it would be long.</p>
-<div class="sourceCode" id="cb187"><pre class="downlit sourceCode r">
+<p>The are some differences with the matrix implementation: * there is a small aproximation in the initialization * the estimation of the dispersion parameter is forced to be genewise</p>
+<p>The best way to use NewWave in this case is the same we see before but I will not run this code because it would be long.</p>
+<div class="sourceCode" id="cb182"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># res4 &lt;- newWave(tenx, K=10, children=2,n_gene_par = 100, n_cell_par = 100, commondispersion = FALSE)</span></code></pre></div>
 <p>The following figures explain the performance of NewWave in this dataset with differents approach:</p>
 <p><img src="time_newWave.png" width="50%"></p>
@@ -585,7 +579,7 @@
 <div id="session-information" class="section level1">
 <h1 class="hasAnchor">
 <a href="#session-information" class="anchor"></a>Session Information</h1>
-<div class="sourceCode" id="cb188"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb183"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <pre><code>## R Under development (unstable) (2020-11-02 r79396)
 ## Platform: x86_64-pc-linux-gnu (64-bit)
@@ -633,7 +627,7 @@
 ## [21] scales_1.1.1                  checkmate_2.0.0              
 ## [23] rappdirs_0.3.1                pkgdown_1.6.1                
 ## [25] systemfonts_0.3.2             stringr_1.4.0                
-## [27] digest_0.6.27                 rmarkdown_2.5                
+## [27] digest_0.6.27                 rmarkdown_2.6                
 ## [29] XVector_0.31.1                pkgconfig_2.0.3              
 ## [31] htmltools_0.5.0               fastmap_1.0.1                
 ## [33] dbplyr_2.0.0                  rlang_0.4.9                  
