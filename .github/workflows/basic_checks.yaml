@@ -1,6 +1,6 @@
 on: [push, pull_request]
 env:
-  cache-version: v1
+  cache-version: v2
   # Change the following line to what you want YOUR
   # docker image to be called. Do not include 
   # any tags--those will be added automatically
