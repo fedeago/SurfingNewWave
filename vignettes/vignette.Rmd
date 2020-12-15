@@ -253,6 +253,10 @@ par <- newFit(data,X = "~Batch", verbose = TRUE,K=10, children=2,
 The result of newFit is an object of class newmodel where are stored all the
 estimated parameter seen in the introduction.
 
+```{r}
+View(par)
+```
+
 With this object we can also compute the AIC and the BIC of the model.
 
 ```{r}
