@@ -260,7 +260,7 @@ estimated parameter seen in the introduction.
 With this object we can also compute the AIC and the BIC of the model.
 
 ```{r}
-newAIC(par, counts(data))
+NewWave::newAIC(par, counts(data))
 ```
 
 ```{r}
