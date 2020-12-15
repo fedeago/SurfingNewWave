@@ -309,17 +309,17 @@ I am not going to show the exact implementation but I will explain how to use Ne
 The biggest strength of using DelayedArray and HDF5 files is the reduction of
 the RAM consumption, the cost of that is that we read only a small piece,
 called chunck, of the dataset every time and so if it is done not properly in
-can strongly slower the computation expecially when it is applied to an 
+can strongly slower the computation especially when it is applied to an 
 iterative optimization such as the one used by NewWave.
 
-For this reason I strongly discourage to set `verbose = T`, this will force
+For this reason I strongly discourage to set `verbose = TRUE`, this will force
 NewWave to read the dataset, chunk by chunk, several time for each iteration.
 
 In this first version of the package this implementation is really effective
 only when applied on big dataset, let's say at least 30K cell.
 
 The are some differences with the matrix implementation:
- * there is a small aproximation in the initialization
+ * there is a small approximation in the initialization
  * the estimation of the dispersion parameter is forced to be genewise
  
 The best way to use NewWave in this case is the same we see before but I will not
