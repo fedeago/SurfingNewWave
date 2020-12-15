@@ -47,6 +47,7 @@ And this is how the parameters are estimated:
 $$\ln(\mu_{ij}) = \Big(X\beta + (V\gamma)^T + W\alpha \Big)_{ij} $$
 $$\ln(\theta_j)   = \zeta_j$$
 These are the steps used for estimate parameters :
+
 * Initialization of regression parameters parameters using ridge regression, and low-rank rapresentation with PCA.
 * Optimization of dispersion parameters, if genewise  massively parallelizable.
 * Optimization of the cell-related parameters, using MLE, massively parallelizable.
@@ -122,7 +123,7 @@ In our situation there are two important variable, Batch and Group.
 colData(data)
 ```
 
-**IMPORTANT:** For batch effecr removal the batch variable must be a factor
+**IMPORTANT:** For batch effect removal the batch variable must be a factor
 
 ```{r}
 data$Batch <- as.factor(data$Batch)
