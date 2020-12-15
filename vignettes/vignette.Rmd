@@ -254,7 +254,7 @@ The result of newFit is an object of class newmodel where are stored all the
 estimated parameter seen in the introduction.
 
 ```{r}
-View(par)
+#View(par)
 ```
 
 With this object we can also compute the AIC and the BIC of the model.
