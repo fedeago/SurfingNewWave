@@ -218,9 +218,9 @@ res3 <- newWave(data,X = "~Batch", verbose = TRUE,K=10, children=2,
                 n_gene_par = 100, n_cell_par = 100, commondispersion = FALSE)
 ```
 
-This way will store the latent rapresentation in the `reducedDim` slot.
+This way will store the latent representation in the `reducedDim` slot.
 
-Now I can use the latent dimension rapresentation for visualization purpose:
+Now I can use the latent dimension representation for visualization purpose:
 
 ```{r}
 latent <- reducedDim(res)
