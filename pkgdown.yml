@@ -1,9 +1,9 @@
-pandoc: 2.7.3
+pandoc: 2.11.4
 pkgdown: 1.6.1
 pkgdown_sha: ~
 articles:
   vignette: vignette.html
-last_built: 2020-12-18T16:29Z
+last_built: 2021-07-31T10:03Z
 urls:
   reference: https://fedeago.github.io/SurfingNewWave//reference
   article: https://fedeago.github.io/SurfingNewWave//articles
