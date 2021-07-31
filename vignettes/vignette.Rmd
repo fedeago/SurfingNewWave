@@ -1,10 +1,10 @@
 ---
-title: "EuroBioc2020 NewWave workshop"
+title: "Bioc2021 NewWave workshop"
 output: 
   rmarkdown::html_vignette:
     toc: true
 vignette: >
-  %\VignetteIndexEntry{EuroBioc2020 NewWave workshop}
+  %\VignetteIndexEntry{Bioc2021 NewWave workshop}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -12,7 +12,7 @@ vignette: >
 
 # Introduction to NewWave
 
-EuroBioc 2020: 14-18 December
+Bioc 2021: 4-6 August
 
 
 ## Workshop Description
@@ -255,7 +255,7 @@ The result of newFit is an object of class newmodel where are stored all the
 estimated parameter seen in the introduction.
 
 ```{r}
-View(par)
+# View(par)
 ```
 
 With this object we can also compute the AIC and the BIC of the model.
@@ -330,7 +330,7 @@ The best way to use NewWave in this case is the same we see before but I will no
 run this code because it would be long.
 
 ```{r}
-# res4 <- newWave(tenx, K=10, children=2,n_gene_par = 100, n_cell_par = 100, commondispersion = FALSE)
+ # res4 <- newWave(tenx[1:1000,1:1000], K=10, children=2,n_gene_par = 100, n_cell_par = 100, commondispersion = FALSE, verbose=T )
 ```
 
 The following figures explain the performance of NewWave in this dataset with differents approach,
