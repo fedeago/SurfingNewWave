@@ -255,13 +255,13 @@ The result of newFit is an object of class newmodel where are stored all the
 estimated parameter seen in the introduction.
 
 ```{r}
-#View(par)
+View(par)
 ```
 
 With this object we can also compute the AIC and the BIC of the model.
 
 ```{r}
-NewWave::newAIC(par, counts(data))
+newAIC(par, counts(data))
 ```
 
 ```{r}
@@ -281,11 +281,14 @@ suppressPackageStartupMessages(library(TENxBrainData))
 ```
 
 
+
+
 ```{r}
 tenx <- TENxBrainData()
 ```
 
 Let's see how is made this SingleCellExperiment
+
 ```{r}
 tenx
 ```
