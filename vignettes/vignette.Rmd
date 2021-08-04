@@ -224,7 +224,7 @@ dispersion parameter this is the fastest configuration:
 **IMPORTANT**:do not use n_gene_disp in this case, it will slower the computation.
 
 ```{r}
-res3 <- newWave(data,X = "~Batch", verbose = TRUE,K=10, children=2,
+res3 <- newWave(data,X = "~Batch", verbose = TRUE,K=10, children=10,
                 n_gene_par = 100, n_cell_par = 100, commondispersion = FALSE)
 ```
 
@@ -256,7 +256,7 @@ if we want to obtain more information about the model we can run `newFit` that
 has exactly the same parameters
 
 ```{r}
-par <- newFit(data,X = "~Batch", verbose = TRUE,K=10, children=2,
+par <- newFit(data,X = "~Batch", verbose = TRUE,K=10, children=10,
                 n_gene_par = 100, n_cell_par = 100, commondispersion = FALSE)
 ```
 
