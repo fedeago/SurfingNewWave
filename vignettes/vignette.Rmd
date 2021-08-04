@@ -336,12 +336,12 @@ run this code because it would be long.
 The following figures explain the performance of NewWave in this dataset with differents approach,
 I have always used only the 1000 most variable genes.
 
-```{r, out.width = "50%", echo = FALSE}
+```{r, echo = FALSE}
 knitr::include_graphics("./time_newWave.png")
 ```
 
 
-```{r, out.width = "50%", echo = FALSE}
+```{r, echo = FALSE}
 knitr::include_graphics("./memory_newWave.png")
 ```
 
