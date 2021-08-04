@@ -18,7 +18,7 @@ Bioc 2021: 4-6 August
 ## Workshop Description
 
 The fast development of single cell sequencing technologies in the recent years has generated a gap between the throughput of the experiments and the capability of analizing these generated data. 
-In this package, we implement mini-batch stochastic gradient descent and the possibility to work with HDF5 files. We decided to use a negative binomial model following the observation that droplet sequencing technologies do not induce zero inflation in the data. Thanks to these improvements and the possibility of massively parallelize the estimation process using PSOCK clusters, we are able to speed up the computation.
+In this package, we implement mini-batch stochastic gradient descent and a framework that allow to work with HDF5 files. We decided to use a negative binomial model following the observation that droplet sequencing technologies do not induce zero inflation in the data. Thanks to these improvements and the possibility of massively parallelize the estimation process using PSOCK clusters, we are able to speed up the computation.
 
 
 ### _R_ / _Bioconductor_ packages used
@@ -45,6 +45,14 @@ $$Y_{ij} \sim NB(\mu_{ij},\theta_j)$$
 And this is how the parameters are estimated:
 
 $$\ln(\mu_{ij}) = \Big(X\beta + (V\gamma)^T + W\alpha \Big)_{ij} $$
+
+ - $X$ represents cells related information such as batch-effect and $\beta$ the related parameters
+ - $V$ represents genes level information such as GC content and $\gamma$ the related parameters
+ - $W$ represent low dimensional representation and $\alpha$ is the matrix of the loadings
+ 
+NewWave is designed for estimate $\beta$, $\gamma$,$W$ and $\alpha$ but only $W$ and $\alpha$ are mandatory, it could be used for dimensional reduction only.
+
+
 $$\ln(\theta_j)   = \zeta_j$$
 These are the steps used for estimate parameters :
 
@@ -108,7 +116,7 @@ class(counts(data))
 ```
 
 As you can see we have the number of cell that we choose(N=500) an 10 000 genes.
-For this workshop we will choose only the 1000 most variable genes.
+For this workshop we will choose only the 500 most variable genes.
 
 ```{r}
 hvg <- rowVars(counts(data))
