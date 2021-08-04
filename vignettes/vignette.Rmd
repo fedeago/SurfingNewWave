@@ -18,7 +18,7 @@ Bioc 2021: 4-6 August
 ## Workshop Description
 
 The fast development of single cell sequencing technologies in the recent years has generated a gap between the throughput of the experiments and the capability of analizing these generated data. 
-In this package, we implement mini-batch stochastic gradient descent and a framework that allow to work with HDF5 files. We decided to use a negative binomial model following the observation that droplet sequencing technologies do not induce zero inflation in the data. Thanks to these improvements and the possibility of massively parallelize the estimation process using PSOCK clusters, we are able to speed up the computation.
+In this package, we implement mini-batch stochastic gradient descent and a framework that allow to work with HDF5 files. We decided to use a negative binomial model following the observation that droplet sequencing technologies do not induce zero inflation in the data. Thanks to these improvements and the possibility to massively parallelize the estimation process using PSOCK clusters, we are able to speed up the computation.
 
 
 ### _R_ / _Bioconductor_ packages used
@@ -195,7 +195,7 @@ In order to make it faster you can increase the number of cores using `children`
 parameter:
 
 ```{r}
-res2 <- newWave(data,X = "~Batch", K=10, verbose = TRUE, children=2)
+res2 <- newWave(data,X = "~Batch", K=10, verbose = TRUE, children=10)
 ```
 
 ## Commonwise dispersion and minibatch approaches
@@ -222,6 +222,7 @@ If you have a lot of core disposable or you want to estimate a genewise
 dispersion parameter this is the fastest configuration:
 
 **IMPORTANT**:do not use n_gene_disp in this case, it will slower the computation.
+
 ```{r}
 res3 <- newWave(data,X = "~Batch", verbose = TRUE,K=10, children=2,
                 n_gene_par = 100, n_cell_par = 100, commondispersion = FALSE)
@@ -263,7 +264,7 @@ The result of newFit is an object of class newmodel where are stored all the
 estimated parameter seen in the introduction.
 
 ```{r}
-# View(par)
+ View(par)
 ```
 
 With this object we can also compute the AIC and the BIC of the model.
@@ -327,8 +328,7 @@ iterative optimization such as the one used by NewWave.
 For this reason I strongly discourage to set `verbose = TRUE`, this will force
 NewWave to read the dataset, chunk by chunk, several time for each iteration.
 
-In this first version of the package this implementation is really effective
-only when applied on big dataset, let's say at least 30K cell.
+This implementation is really effective only when applied on big dataset, let's say at least 30K cell.
 
 The are some differences with the matrix implementation:
  * there is a small approximation in the initialization
@@ -341,8 +341,7 @@ run this code because it would be long.
  # res4 <- newWave(tenx[1:1000,1:1000], K=10, children=2,n_gene_par = 100, n_cell_par = 100, commondispersion = FALSE, verbose=T )
 ```
 
-The following figures explain the performance of NewWave in this dataset with differents approach,
-I have always used only the 1000 most variable genes.
+The following figures explain the performance of NewWave in this dataset with differents approach, I have always used only the 1000 most variable genes.
 
 ```{r, echo = FALSE}
 knitr::include_graphics("./time_newWave.png")
