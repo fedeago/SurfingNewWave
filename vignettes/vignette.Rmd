@@ -212,8 +212,8 @@ observation is settled with these parameters:
         optimization
 
 ```{r}
-res3 <- newWave(data,X = "~Batch", verbose = TRUE,K=10, children=2,
-                n_gene_disp = 100, n_gene_par = 100, n_cell_par = 100)
+res3 <- newWave(data,X = "~Batch", verbose = TRUE,K=10, children=10,
+                n_gene_disp = 50, n_gene_par = 50, n_cell_par = 100)
 ```
 
 ## Genewise dispersion mini-batch
@@ -225,7 +225,7 @@ dispersion parameter this is the fastest configuration:
 
 ```{r}
 res3 <- newWave(data,X = "~Batch", verbose = TRUE,K=10, children=10,
-                n_gene_par = 100, n_cell_par = 100, commondispersion = FALSE)
+                n_gene_par = 50, n_cell_par = 100, commondispersion = FALSE)
 ```
 
 This way will store the latent representation in the `reducedDim` slot.
@@ -233,7 +233,7 @@ This way will store the latent representation in the `reducedDim` slot.
 Now I can use the latent dimension representation for visualization purpose:
 
 ```{r}
-latent <- reducedDim(res)
+latent <- reducedDim(res3)
 
 tsne_latent <- data.frame(Rtsne(latent)$Y)
 tsne_latent$batch <- data$Batch
@@ -257,7 +257,7 @@ has exactly the same parameters
 
 ```{r}
 par <- newFit(data,X = "~Batch", verbose = TRUE,K=10, children=10,
-                n_gene_par = 100, n_cell_par = 100, commondispersion = FALSE)
+                n_gene_par = 50, n_cell_par = 100, commondispersion = FALSE)
 ```
 
 The result of newFit is an object of class newmodel where are stored all the
@@ -354,7 +354,7 @@ knitr::include_graphics("./memory_newWave.png")
 
 # Reference 
 
-The article that describes all the results obtained comparing differents implememntation is now available on biorxiv : https://www.biorxiv.org/content/10.1101/2021.08.02.453487v1 
+The application note that describes all the results obtained comparing differents implememntation is now available on biorxiv : https://www.biorxiv.org/content/10.1101/2021.08.02.453487v1 
 
 # Session Information
 
