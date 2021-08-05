@@ -102,7 +102,7 @@
 <div id="workshop-description" class="section level2">
 <h2 class="hasAnchor">
 <a href="#workshop-description" class="anchor"></a>Workshop Description</h2>
-<p>The fast development of single cell sequencing technologies in the recent years has generated a gap between the throughput of the experiments and the capability of analizing these generated data. In this package, we implement mini-batch stochastic gradient descent and a framework that allow to work with HDF5 files. We decided to use a negative binomial model following the observation that droplet sequencing technologies do not induce zero inflation in the data. Thanks to these improvements and the possibility of massively parallelize the estimation process using PSOCK clusters, we are able to speed up the computation.</p>
+<p>The fast development of single cell sequencing technologies in the recent years has generated a gap between the throughput of the experiments and the capability of analizing these generated data. In this package, we implement mini-batch stochastic gradient descent and a framework that allow to work with HDF5 files. We decided to use a negative binomial model following the observation that droplet sequencing technologies do not induce zero inflation in the data. Thanks to these improvements and the possibility to massively parallelize the estimation process using PSOCK clusters, we are able to speed up the computation.</p>
 <div id="r-bioconductor-packages-used" class="section level3">
 <h3 class="hasAnchor">
 <a href="#r-bioconductor-packages-used" class="anchor"></a><em>R</em> / <em>Bioconductor</em> packages used</h3>
@@ -185,7 +185,7 @@
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/class.html">class</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/SingleCellExperiment/man/assays.html">counts</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <pre><code>## [1] "matrix" "array"</code></pre>
-<p>As you can see we have the number of cell that we choose(N=500) an 10 000 genes. For this workshop we will choose only the 500 most variable genes.</p>
+<p>As you can see we have the number of cell that we choose(N=1000) an 10 000 genes. For this workshop we will choose only the 500 most variable genes.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">hvg</span> <span class="op">&lt;-</span> <span class="fu">rowVars</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/SingleCellExperiment/man/assays.html">counts</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">hvg</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/SingleCellExperiment/man/assays.html">counts</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span><span class="op">)</span>
@@ -249,147 +249,147 @@
 <code class="sourceCode R"><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/NewWave/man/newWave.html">newWave</a></span><span class="op">(</span><span class="va">data</span>, X <span class="op">=</span> <span class="st">"~Batch"</span>, K<span class="op">=</span><span class="fl">10</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
 <pre><code>## Time of setup
 ##    user  system elapsed 
-##   0.006   0.004   0.280 
+##   0.009   0.001   0.254 
 ## Time of initialization
 ##    user  system elapsed 
-##   0.053   0.011   0.827</code></pre>
+##   0.037   0.020   0.655</code></pre>
 <pre><code>## Iteration 1</code></pre>
 <pre><code>## penalized log-likelihood = -2037443.32678582</code></pre>
 <pre><code>## Time of dispersion optimization
 ##    user  system elapsed 
-##   1.018   0.055   1.049</code></pre>
+##   0.936   0.064   0.982</code></pre>
 <pre><code>## after optimize dispersion = -1761735.2486796</code></pre>
 <pre><code>## Time of right optimization
 ##    user  system elapsed 
-##   0.001   0.000  11.983</code></pre>
+##   0.001   0.000   8.253</code></pre>
 <pre><code>## after right optimization= -1712568.56031997</code></pre>
 <pre><code>## after orthogonalization = -1712564.39471734</code></pre>
 <pre><code>## Time of left optimization
 ##    user  system elapsed 
-##   0.020   0.004  12.941</code></pre>
-<pre><code>## after left optimization= -1706344.70711118</code></pre>
-<pre><code>## after orthogonalization = -1706344.11417023</code></pre>
+##   0.012   0.008   8.571</code></pre>
+<pre><code>## after left optimization= -1706344.70711164</code></pre>
+<pre><code>## after orthogonalization = -1706344.1141707</code></pre>
 <pre><code>## Iteration 2</code></pre>
-<pre><code>## penalized log-likelihood = -1706344.11417023</code></pre>
+<pre><code>## penalized log-likelihood = -1706344.1141707</code></pre>
 <pre><code>## Time of dispersion optimization
 ##    user  system elapsed 
-##   1.170   0.056   1.106</code></pre>
-<pre><code>## after optimize dispersion = -1705180.42919638</code></pre>
+##   1.116   0.053   1.069</code></pre>
+<pre><code>## after optimize dispersion = -1705180.42919711</code></pre>
 <pre><code>## Time of right optimization
 ##    user  system elapsed 
-##   0.001   0.000  12.799</code></pre>
-<pre><code>## after right optimization= -1704625.65147708</code></pre>
-<pre><code>## after orthogonalization = -1704625.58877604</code></pre>
+##   0.001   0.000   8.775</code></pre>
+<pre><code>## after right optimization= -1704625.65181094</code></pre>
+<pre><code>## after orthogonalization = -1704625.5891099</code></pre>
 <pre><code>## Time of left optimization
 ##    user  system elapsed 
-##   0.020   0.017  14.033</code></pre>
-<pre><code>## after left optimization= -1704412.41920802</code></pre>
-<pre><code>## after orthogonalization = -1704412.40261406</code></pre>
+##   0.018   0.004   9.249</code></pre>
+<pre><code>## after left optimization= -1704412.41079452</code></pre>
+<pre><code>## after orthogonalization = -1704412.39422238</code></pre>
 <pre><code>## Iteration 3</code></pre>
-<pre><code>## penalized log-likelihood = -1704412.40261406</code></pre>
+<pre><code>## penalized log-likelihood = -1704412.39422238</code></pre>
 <pre><code>## Time of dispersion optimization
 ##    user  system elapsed 
-##   1.179   0.056   1.114</code></pre>
-<pre><code>## after optimize dispersion = -1704408.58269685</code></pre>
+##   1.106   0.064   1.063</code></pre>
+<pre><code>## after optimize dispersion = -1704408.57483847</code></pre>
 <pre><code>## Time of right optimization
 ##    user  system elapsed 
-##   0.001   0.000  11.540</code></pre>
-<pre><code>## after right optimization= -1704304.35907432</code></pre>
-<pre><code>## after orthogonalization = -1704304.35291608</code></pre>
+##   0.001   0.000   7.873</code></pre>
+<pre><code>## after right optimization= -1704304.35629273</code></pre>
+<pre><code>## after orthogonalization = -1704304.3501141</code></pre>
 <pre><code>## Time of left optimization
 ##    user  system elapsed 
-##   0.010   0.012  13.375</code></pre>
-<pre><code>## after left optimization= -1704239.65815069</code></pre>
-<pre><code>## after orthogonalization = -1704239.65752193</code></pre>
+##   0.013   0.024   8.909</code></pre>
+<pre><code>## after left optimization= -1704239.61820607</code></pre>
+<pre><code>## after orthogonalization = -1704239.61757635</code></pre>
 <pre><code>## Iteration 4</code></pre>
-<pre><code>## penalized log-likelihood = -1704239.65752193</code></pre>
+<pre><code>## penalized log-likelihood = -1704239.61757635</code></pre>
 <pre><code>## Time of dispersion optimization
 ##    user  system elapsed 
-##   1.192   0.068   1.141</code></pre>
-<pre><code>## after optimize dispersion = -1704239.52819119</code></pre>
+##   1.111   0.056   1.062</code></pre>
+<pre><code>## after optimize dispersion = -1704239.48789269</code></pre>
 <pre><code>## Time of right optimization
 ##    user  system elapsed 
-##   0.001   0.000  10.371</code></pre>
-<pre><code>## after right optimization= -1704191.26044754</code></pre>
-<pre><code>## after orthogonalization = -1704191.25733056</code></pre>
+##   0.001   0.000   7.137</code></pre>
+<pre><code>## after right optimization= -1704191.17432547</code></pre>
+<pre><code>## after orthogonalization = -1704191.17123847</code></pre>
 <pre><code>## Time of left optimization
 ##    user  system elapsed 
-##   0.012   0.021  12.657</code></pre>
-<pre><code>## after left optimization= -1704154.99833729</code></pre>
-<pre><code>## after orthogonalization = -1704154.99790263</code></pre>
+##   0.021   0.009   8.578</code></pre>
+<pre><code>## after left optimization= -1704154.6650406</code></pre>
+<pre><code>## after orthogonalization = -1704154.66461525</code></pre>
 <p>In order to make it faster you can increase the number of cores using <code>children</code> parameter:</p>
 <div class="sourceCode" id="cb58"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">res2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/NewWave/man/newWave.html">newWave</a></span><span class="op">(</span><span class="va">data</span>,X <span class="op">=</span> <span class="st">"~Batch"</span>, K<span class="op">=</span><span class="fl">10</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span>, children<span class="op">=</span><span class="fl">2</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="va">res2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/NewWave/man/newWave.html">newWave</a></span><span class="op">(</span><span class="va">data</span>,X <span class="op">=</span> <span class="st">"~Batch"</span>, K<span class="op">=</span><span class="fl">10</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span>, children<span class="op">=</span><span class="fl">10</span><span class="op">)</span></code></pre></div>
 <pre><code>## Time of setup
 ##    user  system elapsed 
-##   0.012   0.001   0.287 
+##   0.018   0.003   1.224 
 ## Time of initialization
 ##    user  system elapsed 
-##   0.054   0.004   0.696</code></pre>
+##   0.096   0.016   0.916</code></pre>
 <pre><code>## Iteration 1</code></pre>
 <pre><code>## penalized log-likelihood = -2037443.32678783</code></pre>
 <pre><code>## Time of dispersion optimization
 ##    user  system elapsed 
-##   1.008   0.025   0.997</code></pre>
+##   0.956   0.013   0.938</code></pre>
 <pre><code>## after optimize dispersion = -1761735.24876843</code></pre>
 <pre><code>## Time of right optimization
 ##    user  system elapsed 
-##   0.001   0.000  12.798</code></pre>
+##   0.003   0.000  11.045</code></pre>
 <pre><code>## after right optimization= -1712568.56030678</code></pre>
 <pre><code>## after orthogonalization = -1712564.39470413</code></pre>
 <pre><code>## Time of left optimization
 ##    user  system elapsed 
-##   0.020   0.004   6.808</code></pre>
-<pre><code>## after left optimization= -1706344.70720138</code></pre>
-<pre><code>## after orthogonalization = -1706344.11426006</code></pre>
+##   0.009   0.008   4.977</code></pre>
+<pre><code>## after left optimization= -1706344.70720047</code></pre>
+<pre><code>## after orthogonalization = -1706344.11425915</code></pre>
 <pre><code>## Iteration 2</code></pre>
-<pre><code>## penalized log-likelihood = -1706344.11426006</code></pre>
+<pre><code>## penalized log-likelihood = -1706344.11425915</code></pre>
 <pre><code>## Time of dispersion optimization
 ##    user  system elapsed 
-##   1.227   0.072   1.178</code></pre>
-<pre><code>## after optimize dispersion = -1705180.42927138</code></pre>
+##   1.111   0.060   1.065</code></pre>
+<pre><code>## after optimize dispersion = -1705180.42927052</code></pre>
 <pre><code>## Time of right optimization
 ##    user  system elapsed 
-##   0.002   0.000  13.259</code></pre>
-<pre><code>## after right optimization= -1704625.65126147</code></pre>
-<pre><code>## after orthogonalization = -1704625.58856274</code></pre>
+##   0.000   0.004  11.583</code></pre>
+<pre><code>## after right optimization= -1704625.65126335</code></pre>
+<pre><code>## after orthogonalization = -1704625.58856465</code></pre>
 <pre><code>## Time of left optimization
 ##    user  system elapsed 
-##   0.020   0.016   6.976</code></pre>
-<pre><code>## after left optimization= -1704412.43087219</code></pre>
-<pre><code>## after orthogonalization = -1704412.41426885</code></pre>
+##   0.006   0.012   5.176</code></pre>
+<pre><code>## after left optimization= -1704412.43028258</code></pre>
+<pre><code>## after orthogonalization = -1704412.41368037</code></pre>
 <pre><code>## Iteration 3</code></pre>
-<pre><code>## penalized log-likelihood = -1704412.41426885</code></pre>
+<pre><code>## penalized log-likelihood = -1704412.41368037</code></pre>
 <pre><code>## Time of dispersion optimization
 ##    user  system elapsed 
-##   1.227   0.080   1.187</code></pre>
-<pre><code>## after optimize dispersion = -1704408.59452583</code></pre>
+##   1.083   0.084   1.061</code></pre>
+<pre><code>## after optimize dispersion = -1704408.59417411</code></pre>
 <pre><code>## Time of right optimization
 ##    user  system elapsed 
-##   0.000   0.002  11.924</code></pre>
-<pre><code>## after right optimization= -1704304.38471573</code></pre>
-<pre><code>## after orthogonalization = -1704304.37854646</code></pre>
+##   0.004   0.000  10.378</code></pre>
+<pre><code>## after right optimization= -1704304.37626503</code></pre>
+<pre><code>## after orthogonalization = -1704304.37009586</code></pre>
 <pre><code>## Time of left optimization
 ##    user  system elapsed 
-##   0.011   0.024   6.965</code></pre>
-<pre><code>## after left optimization= -1704239.6106561</code></pre>
-<pre><code>## after orthogonalization = -1704239.61004001</code></pre>
+##   0.010   0.009   5.107</code></pre>
+<pre><code>## after left optimization= -1704239.61228352</code></pre>
+<pre><code>## after orthogonalization = -1704239.61166838</code></pre>
 <pre><code>## Iteration 4</code></pre>
-<pre><code>## penalized log-likelihood = -1704239.61004001</code></pre>
+<pre><code>## penalized log-likelihood = -1704239.61166838</code></pre>
 <pre><code>## Time of dispersion optimization
 ##    user  system elapsed 
-##   1.195   0.080   1.155</code></pre>
-<pre><code>## after optimize dispersion = -1704239.4804606</code></pre>
+##   1.099   0.100   1.092</code></pre>
+<pre><code>## after optimize dispersion = -1704239.48238823</code></pre>
 <pre><code>## Time of right optimization
 ##    user  system elapsed 
-##   0.001   0.000  10.525</code></pre>
-<pre><code>## after right optimization= -1704191.0961776</code></pre>
-<pre><code>## after orthogonalization = -1704191.09307776</code></pre>
+##   0.004   0.000   9.528</code></pre>
+<pre><code>## after right optimization= -1704191.06718292</code></pre>
+<pre><code>## after orthogonalization = -1704191.06410209</code></pre>
 <pre><code>## Time of left optimization
 ##    user  system elapsed 
-##   0.018   0.013   6.452</code></pre>
-<pre><code>## after left optimization= -1704154.60600656</code></pre>
-<pre><code>## after orthogonalization = -1704154.60558375</code></pre>
+##   0.017   0.012   4.846</code></pre>
+<pre><code>## after left optimization= -1704154.57436112</code></pre>
+<pre><code>## after orthogonalization = -1704154.57393398</code></pre>
 </div>
 <div id="commonwise-dispersion-and-minibatch-approaches" class="section level2">
 <h2 class="hasAnchor">
@@ -406,58 +406,58 @@
                 n_gene_disp <span class="op">=</span> <span class="fl">100</span>, n_gene_par <span class="op">=</span> <span class="fl">100</span>, n_cell_par <span class="op">=</span> <span class="fl">100</span><span class="op">)</span></code></pre></div>
 <pre><code>## Time of setup
 ##    user  system elapsed 
-##   0.009   0.005   0.292 
+##   0.009   0.000   0.221 
 ## Time of initialization
 ##    user  system elapsed 
-##   0.052   0.007   0.690</code></pre>
+##   0.048   0.004   0.476</code></pre>
 <pre><code>## Iteration 1</code></pre>
 <pre><code>## penalized log-likelihood = -2037443.32678676</code></pre>
 <pre><code>## Time of dispersion optimization
 ##    user  system elapsed 
-##   1.053   0.017   1.030</code></pre>
+##   0.958   0.012   0.936</code></pre>
 <pre><code>## after optimize dispersion = -1761735.2486814</code></pre>
 <pre><code>## Time of right optimization
 ##    user  system elapsed 
-##   0.002   0.000  12.360</code></pre>
+##   0.001   0.000   8.739</code></pre>
 <pre><code>## after right optimization= -1712568.56031708</code></pre>
 <pre><code>## after orthogonalization = -1712564.39471445</code></pre>
 <pre><code>## Time of left optimization
 ##    user  system elapsed 
-##   0.011   0.028   6.796</code></pre>
-<pre><code>## after left optimization= -1706344.70711352</code></pre>
-<pre><code>## after orthogonalization = -1706344.11417257</code></pre>
+##   0.008   0.009   4.562</code></pre>
+<pre><code>## after left optimization= -1706344.70711463</code></pre>
+<pre><code>## after orthogonalization = -1706344.11417368</code></pre>
 <pre><code>## Iteration 2</code></pre>
-<pre><code>## penalized log-likelihood = -1706344.11417257</code></pre>
+<pre><code>## penalized log-likelihood = -1706344.11417368</code></pre>
 <pre><code>## Time of dispersion optimization
 ##    user  system elapsed 
-##   0.432   0.056   0.367</code></pre>
-<pre><code>## after optimize dispersion = -1705180.8522719</code></pre>
+##   0.395   0.048   0.336</code></pre>
+<pre><code>## after optimize dispersion = -1705180.85227346</code></pre>
 <pre><code>## Time of right optimization
 ##    user  system elapsed 
-##   0.001   0.000   2.905</code></pre>
-<pre><code>## after right optimization= -1705068.89189553</code></pre>
-<pre><code>## after orthogonalization = -1705068.88696244</code></pre>
+##   0.000   0.001   1.799</code></pre>
+<pre><code>## after right optimization= -1705079.52347839</code></pre>
+<pre><code>## after orthogonalization = -1705079.51130578</code></pre>
 <pre><code>## Time of left optimization
 ##    user  system elapsed 
-##   0.005   0.017   0.721</code></pre>
-<pre><code>## after left optimization= -1705063.3590228</code></pre>
-<pre><code>## after orthogonalization = -1705063.35893738</code></pre>
+##   0.016   0.005   0.456</code></pre>
+<pre><code>## after left optimization= -1705074.9690657</code></pre>
+<pre><code>## after orthogonalization = -1705074.96888105</code></pre>
 <pre><code>## Iteration 3</code></pre>
-<pre><code>## penalized log-likelihood = -1705063.35893738</code></pre>
+<pre><code>## penalized log-likelihood = -1705074.96888105</code></pre>
 <pre><code>## Time of dispersion optimization
 ##    user  system elapsed 
-##   0.472   0.064   0.417</code></pre>
-<pre><code>## after optimize dispersion = -1705063.35893738</code></pre>
+##   0.396   0.048   0.337</code></pre>
+<pre><code>## after optimize dispersion = -1705074.96888105</code></pre>
 <pre><code>## Time of right optimization
 ##    user  system elapsed 
-##   0.001   0.001   2.439</code></pre>
-<pre><code>## after right optimization= -1704978.75648554</code></pre>
-<pre><code>## after orthogonalization = -1704978.75118</code></pre>
+##   0.001   0.000   1.564</code></pre>
+<pre><code>## after right optimization= -1704978.63030194</code></pre>
+<pre><code>## after orthogonalization = -1704978.62259441</code></pre>
 <pre><code>## Time of left optimization
 ##    user  system elapsed 
-##   0.027   0.016   0.718</code></pre>
-<pre><code>## after left optimization= -1704969.4628711</code></pre>
-<pre><code>## after orthogonalization = -1704969.46264308</code></pre>
+##   0.021   0.016   0.467</code></pre>
+<pre><code>## after left optimization= -1704969.93126241</code></pre>
+<pre><code>## after orthogonalization = -1704969.93080752</code></pre>
 </div>
 <div id="genewise-dispersion-mini-batch" class="section level2">
 <h2 class="hasAnchor">
@@ -465,62 +465,62 @@
 <p>If you have a lot of core disposable or you want to estimate a genewise dispersion parameter this is the fastest configuration:</p>
 <p><strong>IMPORTANT</strong>:do not use n_gene_disp in this case, it will slower the computation.</p>
 <div class="sourceCode" id="cb132"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">res3</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/NewWave/man/newWave.html">newWave</a></span><span class="op">(</span><span class="va">data</span>,X <span class="op">=</span> <span class="st">"~Batch"</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span>,K<span class="op">=</span><span class="fl">10</span>, children<span class="op">=</span><span class="fl">2</span>,
+<code class="sourceCode R"><span class="va">res3</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/NewWave/man/newWave.html">newWave</a></span><span class="op">(</span><span class="va">data</span>,X <span class="op">=</span> <span class="st">"~Batch"</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span>,K<span class="op">=</span><span class="fl">10</span>, children<span class="op">=</span><span class="fl">10</span>,
                 n_gene_par <span class="op">=</span> <span class="fl">100</span>, n_cell_par <span class="op">=</span> <span class="fl">100</span>, commondispersion <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></code></pre></div>
 <pre><code>## Time of setup
 ##    user  system elapsed 
-##   0.012   0.000   0.291 
+##   0.017   0.005   1.201 
 ## Time of initialization
 ##    user  system elapsed 
-##   0.053   0.008   0.645</code></pre>
+##   0.092   0.020   0.864</code></pre>
 <pre><code>## Iteration 1</code></pre>
 <pre><code>## penalized log-likelihood = -2037443.32678603</code></pre>
 <pre><code>## Time of dispersion optimization
 ##    user  system elapsed 
-##   1.013   0.020   0.993</code></pre>
+##   0.941   0.020   0.929</code></pre>
 <pre><code>## after optimize dispersion = -1761735.24867292</code></pre>
 <pre><code>## Time of right optimization
 ##    user  system elapsed 
-##   0.001   0.000  12.266</code></pre>
+##   0.004   0.001  11.156</code></pre>
 <pre><code>## after right optimization= -1712568.5603126</code></pre>
 <pre><code>## after orthogonalization = -1712564.39470996</code></pre>
 <pre><code>## Time of left optimization
 ##    user  system elapsed 
-##   0.016   0.024   6.710</code></pre>
-<pre><code>## after left optimization= -1706344.70711143</code></pre>
-<pre><code>## after orthogonalization = -1706344.11417048</code></pre>
+##   0.014   0.000   4.928</code></pre>
+<pre><code>## after left optimization= -1706344.70711184</code></pre>
+<pre><code>## after orthogonalization = -1706344.11417089</code></pre>
 <pre><code>## Iteration 2</code></pre>
-<pre><code>## penalized log-likelihood = -1706344.11417048</code></pre>
+<pre><code>## penalized log-likelihood = -1706344.11417089</code></pre>
 <pre><code>## Time of dispersion optimization
 ##    user  system elapsed 
-##   0.154   0.036   0.932</code></pre>
-<pre><code>## after optimize dispersion = -1699482.9629962</code></pre>
+##   0.124   0.028   0.787</code></pre>
+<pre><code>## after optimize dispersion = -1699482.96298282</code></pre>
 <pre><code>## Time of right optimization
 ##    user  system elapsed 
-##   0.001   0.000   2.910</code></pre>
-<pre><code>## after right optimization= -1699384.46783668</code></pre>
-<pre><code>## after orthogonalization = -1699384.46082807</code></pre>
+##   0.002   0.003   2.465</code></pre>
+<pre><code>## after right optimization= -1699396.45385822</code></pre>
+<pre><code>## after orthogonalization = -1699396.44934526</code></pre>
 <pre><code>## Time of left optimization
 ##    user  system elapsed 
-##   0.006   0.009   0.740</code></pre>
-<pre><code>## after left optimization= -1699338.57182957</code></pre>
-<pre><code>## after orthogonalization = -1699338.57106024</code></pre>
+##   0.030   0.001   0.565</code></pre>
+<pre><code>## after left optimization= -1699346.90034649</code></pre>
+<pre><code>## after orthogonalization = -1699346.89972151</code></pre>
 <pre><code>## Iteration 3</code></pre>
-<pre><code>## penalized log-likelihood = -1699338.57106024</code></pre>
+<pre><code>## penalized log-likelihood = -1699346.89972151</code></pre>
 <pre><code>## Time of dispersion optimization
 ##    user  system elapsed 
-##   0.149   0.064   0.475</code></pre>
-<pre><code>## after optimize dispersion = -1699338.79680152</code></pre>
+##   0.130   0.056   0.388</code></pre>
+<pre><code>## after optimize dispersion = -1699347.12652785</code></pre>
 <pre><code>## Time of right optimization
 ##    user  system elapsed 
-##   0.002   0.000   2.592</code></pre>
-<pre><code>## after right optimization= -1699272.64399913</code></pre>
-<pre><code>## after orthogonalization = -1699272.63652307</code></pre>
+##   0.004   0.000   2.400</code></pre>
+<pre><code>## after right optimization= -1699267.1801801</code></pre>
+<pre><code>## after orthogonalization = -1699267.16911223</code></pre>
 <pre><code>## Time of left optimization
 ##    user  system elapsed 
-##   0.012   0.016   0.729</code></pre>
-<pre><code>## after left optimization= -1699230.55909461</code></pre>
-<pre><code>## after orthogonalization = -1699230.55846931</code></pre>
+##   0.004   0.001   0.557</code></pre>
+<pre><code>## after left optimization= -1699222.70205022</code></pre>
+<pre><code>## after orthogonalization = -1699222.70134823</code></pre>
 <p>This way will store the latent representation in the <code>reducedDim</code> slot.</p>
 <p>Now I can use the latent dimension representation for visualization purpose:</p>
 <div class="sourceCode" id="cb164"><pre class="downlit sourceCode r">
@@ -540,72 +540,72 @@
 <pre><code>## [1] 1</code></pre>
 <p>if we want to obtain more information about the model we can run <code>newFit</code> that has exactly the same parameters</p>
 <div class="sourceCode" id="cb168"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">par</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/NewWave/man/newFit.html">newFit</a></span><span class="op">(</span><span class="va">data</span>,X <span class="op">=</span> <span class="st">"~Batch"</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span>,K<span class="op">=</span><span class="fl">10</span>, children<span class="op">=</span><span class="fl">2</span>,
+<code class="sourceCode R"><span class="va">par</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/NewWave/man/newFit.html">newFit</a></span><span class="op">(</span><span class="va">data</span>,X <span class="op">=</span> <span class="st">"~Batch"</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span>,K<span class="op">=</span><span class="fl">10</span>, children<span class="op">=</span><span class="fl">10</span>,
                 n_gene_par <span class="op">=</span> <span class="fl">100</span>, n_cell_par <span class="op">=</span> <span class="fl">100</span>, commondispersion <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></code></pre></div>
 <pre><code>## Time of setup
 ##    user  system elapsed 
-##   0.009   0.004   0.295 
+##   0.009   0.012   1.192 
 ## Time of initialization
 ##    user  system elapsed 
-##   0.056   0.007   0.644</code></pre>
+##   0.104   0.019   0.871</code></pre>
 <pre><code>## Iteration 1</code></pre>
 <pre><code>## penalized log-likelihood = -2037443.326783</code></pre>
 <pre><code>## Time of dispersion optimization
 ##    user  system elapsed 
-##   1.042   0.016   1.024</code></pre>
+##   0.942   0.020   0.931</code></pre>
 <pre><code>## after optimize dispersion = -1761735.24865698</code></pre>
 <pre><code>## Time of right optimization
 ##    user  system elapsed 
-##   0.001   0.000  12.638</code></pre>
+##   0.005   0.000  11.081</code></pre>
 <pre><code>## after right optimization= -1712568.56034132</code></pre>
 <pre><code>## after orthogonalization = -1712564.39473892</code></pre>
 <pre><code>## Time of left optimization
 ##    user  system elapsed 
-##   0.012   0.008   6.737</code></pre>
-<pre><code>## after left optimization= -1706344.70714661</code></pre>
-<pre><code>## after orthogonalization = -1706344.11420646</code></pre>
+##   0.004   0.000   4.948</code></pre>
+<pre><code>## after left optimization= -1706344.70714655</code></pre>
+<pre><code>## after orthogonalization = -1706344.11420639</code></pre>
 <pre><code>## Iteration 2</code></pre>
-<pre><code>## penalized log-likelihood = -1706344.11420646</code></pre>
+<pre><code>## penalized log-likelihood = -1706344.11420639</code></pre>
 <pre><code>## Time of dispersion optimization
 ##    user  system elapsed 
-##   0.129   0.048   0.898</code></pre>
-<pre><code>## after optimize dispersion = -1699482.96432227</code></pre>
+##   0.121   0.040   0.787</code></pre>
+<pre><code>## after optimize dispersion = -1699482.96434586</code></pre>
 <pre><code>## Time of right optimization
 ##    user  system elapsed 
-##   0.001   0.000   2.863</code></pre>
-<pre><code>## after right optimization= -1699384.79017712</code></pre>
-<pre><code>## after orthogonalization = -1699384.78339757</code></pre>
+##   0.004   0.000   2.644</code></pre>
+<pre><code>## after right optimization= -1699384.70419717</code></pre>
+<pre><code>## after orthogonalization = -1699384.69846448</code></pre>
 <pre><code>## Time of left optimization
 ##    user  system elapsed 
-##   0.002   0.008   0.749</code></pre>
-<pre><code>## after left optimization= -1699342.90518883</code></pre>
-<pre><code>## after orthogonalization = -1699342.90489885</code></pre>
+##   0.005   0.000   0.566</code></pre>
+<pre><code>## after left optimization= -1699338.57730577</code></pre>
+<pre><code>## after orthogonalization = -1699338.57636737</code></pre>
 <pre><code>## Iteration 3</code></pre>
-<pre><code>## penalized log-likelihood = -1699342.90489885</code></pre>
+<pre><code>## penalized log-likelihood = -1699338.57636737</code></pre>
 <pre><code>## Time of dispersion optimization
 ##    user  system elapsed 
-##   0.164   0.036   0.444</code></pre>
-<pre><code>## after optimize dispersion = -1699343.1300599</code></pre>
+##   0.114   0.065   0.393</code></pre>
+<pre><code>## after optimize dispersion = -1699338.80015134</code></pre>
 <pre><code>## Time of right optimization
 ##    user  system elapsed 
-##   0.000   0.002   2.582</code></pre>
-<pre><code>## after right optimization= -1699265.18905529</code></pre>
-<pre><code>## after orthogonalization = -1699265.18154203</code></pre>
+##   0.004   0.000   2.357</code></pre>
+<pre><code>## after right optimization= -1699241.76345261</code></pre>
+<pre><code>## after orthogonalization = -1699241.75451097</code></pre>
 <pre><code>## Time of left optimization
 ##    user  system elapsed 
-##   0.006   0.012   0.741</code></pre>
-<pre><code>## after left optimization= -1699222.91839823</code></pre>
-<pre><code>## after orthogonalization = -1699222.91778209</code></pre>
+##   0.023   0.008   0.570</code></pre>
+<pre><code>## after left optimization= -1699200.59277146</code></pre>
+<pre><code>## after orthogonalization = -1699200.59178282</code></pre>
 <p>The result of newFit is an object of class newmodel where are stored all the estimated parameter seen in the introduction.</p>
 <div class="sourceCode" id="cb200"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># View(par)</span></code></pre></div>
+<code class="sourceCode R"> <span class="co"># View(par)</span></code></pre></div>
 <p>With this object we can also compute the AIC and the BIC of the model.</p>
 <div class="sourceCode" id="cb201"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/NewWave/man/newAIC.html">newAIC</a></span><span class="op">(</span><span class="va">par</span>, <span class="fu"><a href="https://rdrr.io/pkg/SingleCellExperiment/man/assays.html">counts</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<pre><code>## [1] 3433752</code></pre>
+<pre><code>## [1] 3433706</code></pre>
 <div class="sourceCode" id="cb203"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/NewWave/man/newBIC.html">newBIC</a></span><span class="op">(</span><span class="va">par</span>, <span class="fu"><a href="https://rdrr.io/pkg/SingleCellExperiment/man/assays.html">counts</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<pre><code>## [1] 3541723</code></pre>
+<pre><code>## [1] 3541676</code></pre>
 </div>
 </div>
 <div id="newwave-on-delayedarray" class="section level1">
@@ -653,7 +653,7 @@
 <p>I am not going to show the exact implementation but I will explain how to use NewWave in this situation and why.</p>
 <p>The biggest strength of using DelayedArray and HDF5 files is the reduction of the RAM consumption, the cost of that is that we read only a small piece, called chunck, of the dataset every time and so if it is done not properly in can strongly slower the computation especially when it is applied to an iterative optimization such as the one used by NewWave.</p>
 <p>For this reason I strongly discourage to set <code>verbose = TRUE</code>, this will force NewWave to read the dataset, chunk by chunk, several time for each iteration.</p>
-<p>In this first version of the package this implementation is really effective only when applied on big dataset, let’s say at least 30K cell.</p>
+<p>This implementation is really effective only when applied on big dataset, let’s say at least 30K cell.</p>
 <p>The are some differences with the matrix implementation: * there is a small approximation in the initialization * the estimation of the dispersion parameter is forced to be genewise</p>
 <p>The best way to use NewWave in this case is the same we see before but I will not run this code because it would be long.</p>
 <div class="sourceCode" id="cb218"><pre class="downlit sourceCode r">
@@ -722,7 +722,7 @@
 ## [29] glue_1.4.2                    GenomeInfoDbData_1.2.6       
 ## [31] dplyr_1.0.7                   rappdirs_0.3.3               
 ## [33] Rcpp_1.0.7                    jquerylib_0.1.4              
-## [35] pkgdown_1.6.1                 Biostrings_2.61.1            
+## [35] pkgdown_1.6.1                 Biostrings_2.61.2            
 ## [37] vctrs_0.3.8                   rhdf5filters_1.5.0           
 ## [39] ExperimentHub_2.1.4           xfun_0.24                    
 ## [41] stringr_1.4.0                 beachmat_2.9.0               
