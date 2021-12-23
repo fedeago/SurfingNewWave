@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     container: bioconductor/bioconductor_docker:devel
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
 
       - name: Query dependencies and update old packages
         run: |
@@ -22,7 +22,7 @@ jobs:
         
       - name: Cache R packages
         if: runner.os != 'Windows'
-        uses: actions/cache@v2
+        uses: actions/cache@v1
         with:
           path: /usr/local/lib/R/site-library
           key: ${{ env.cache-version }}-${{ runner.os }}-r-${{ hashFiles('.github/depends.Rds') }}
